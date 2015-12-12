@@ -23,4 +23,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'im.wangchao:mhttpadapter:0.2.0'
+//    compile 'de.javakaffee:kryo-serializers:0.33'
+    compile 'io.paperdb:paperdb:1.1'
 }
