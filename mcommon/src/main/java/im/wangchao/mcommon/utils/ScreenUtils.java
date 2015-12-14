@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * <p>Description  : ScreenUtils.</p>
@@ -17,6 +21,53 @@ import android.view.WindowManager;
  */
 public class ScreenUtils {
     private ScreenUtils(){}
+
+    public static final int XXHDPI = 1;//超高分辨率     1080×1280
+    public static final int XHDPI = 2;//超高分辨率      720×1280
+    public static final int HDPI = 3;//高分辨率         480×800
+    public static final int MDPI = 4;//中分辨率         320×480
+    public static final int LDPI = 5;//低分辨率
+
+    @IntDef({
+            XXHDPI, XHDPI, HDPI, MDPI, LDPI
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ScreenDensity{}
+
+    @ScreenDensity public static int initDisply(Context context){
+        int eScreenDensity;
+        //初始化屏幕密度
+        DisplayMetrics dm = context.getApplicationContext().getResources().getDisplayMetrics();
+        int densityDpi = dm.densityDpi;
+
+        if (densityDpi <= 160){
+            eScreenDensity = MDPI;
+        }else if (densityDpi <= 240){
+            eScreenDensity = HDPI;
+        }else if (densityDpi < 400){
+            eScreenDensity = XHDPI;
+        }else {
+            eScreenDensity = XXHDPI;
+        }
+
+        return  eScreenDensity;
+    }
+
+    /**
+     * check pad
+     */
+    public static boolean isPad(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+        double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+        double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+        //屏幕尺寸(英寸)
+        double screenInches = Math.sqrt(x + y);
+        //大于6英寸则为Pad
+        return screenInches >= 6.0;
+    }
 
     /**
      * 设置当前界面为全屏模式
