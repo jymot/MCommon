@@ -4,8 +4,8 @@ package im.wangchao.mcommon.cache;
  * <p>Description  : TODO.</p>
  * <p/>
  * <p>Author       : wangchao.</p>
- * <p>Date         : 15/12/13.</p>
- * <p>Time         : 上午10:25.</p>
+ * <p>Date         : 15/12/15.</p>
+ * <p>Time         : 下午8:38.</p>
  */
-public class LurMemoryCache {
+public class LruDiskCache {
 }
