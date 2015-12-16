@@ -20,7 +20,9 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Time         : 上午9:50.</p>
  */
 public class ScreenUtils {
-    private ScreenUtils(){}
+    private ScreenUtils(){
+        throw new AssertionError();
+    }
 
     public static final int XXHDPI = 1;//超高分辨率     1080×1280
     public static final int XHDPI = 2;//超高分辨率      720×1280

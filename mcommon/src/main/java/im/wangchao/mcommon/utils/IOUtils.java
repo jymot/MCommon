@@ -25,7 +25,9 @@ import java.net.Socket;
  * <p>Time         : 下午3:09.</p>
  */
 public class IOUtils {
-    private IOUtils(){}
+    private IOUtils(){
+        throw new AssertionError();
+    }
 
     /**
      * Closes {@code closeable}, ignoring any checked exceptions. Does nothing

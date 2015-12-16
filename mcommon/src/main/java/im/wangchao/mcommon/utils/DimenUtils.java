@@ -11,7 +11,9 @@ import android.util.TypedValue;
  * <p>Time         : 下午9:37.</p>
  */
 public class DimenUtils {
-    private DimenUtils(){}
+    private DimenUtils(){
+        throw new AssertionError();
+    }
 
     /**
      * dp -> px

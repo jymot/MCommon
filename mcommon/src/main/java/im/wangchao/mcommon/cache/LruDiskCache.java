@@ -1,7 +1,7 @@
 package im.wangchao.mcommon.cache;
 
 /**
- * <p>Description  : TODO.</p>
+ * <p>Description  : LruDiskCache.</p>
  * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/15.</p>

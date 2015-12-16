@@ -17,7 +17,9 @@ import java.util.Map;
 public class SharedPreferencesUtils {
     private static volatile SharedPreferences sp;
     private static final    Method apply = getApplyMethod();
-    private SharedPreferencesUtils(){}
+    private SharedPreferencesUtils(){
+        throw new AssertionError();
+    }
 
     /**
      * Save key - value

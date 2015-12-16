@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 
@@ -18,7 +19,9 @@ import java.io.ByteArrayOutputStream;
  * <p>Time         : 上午9:46.</p>
  */
 public class BitmapUtils {
-    private BitmapUtils(){}
+    private BitmapUtils(){
+        throw new AssertionError();
+    }
 
     private static int mDesiredWidth;
     private static int mDesiredHeight;
@@ -26,30 +29,39 @@ public class BitmapUtils {
     /**
      * Byte[]转Bitmap
      */
-    public static Bitmap bytes2Bitmap(byte[] data) {
-        return BitmapFactory.decodeByteArray(data, 0, data.length);
+    @Nullable public static Bitmap bytes2Bitmap(byte[] b) {
+        return (b == null || b.length == 0) ? null : BitmapFactory.decodeByteArray(b, 0, b.length);
     }
 
     /**
      * Bitmap转Byte[]
      */
-    public static byte[] bitmap2Bytes(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        return baos.toByteArray();
+    @Nullable public static byte[] bitmap2Bytes(Bitmap bitmap) {
+        if (bitmap == null){
+            return null;
+        }
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, o);
+        return o.toByteArray();
     }
 
     /**
      * Bitmap转Drawable
      */
-    public static Drawable bitmap2Drawable(Bitmap bitmap) {
-        return new BitmapDrawable(bitmap);
+    @Nullable public static Drawable bitmap2Drawable(Bitmap bitmap) {
+        if (bitmap == null){
+            return null;
+        }
+        return new BitmapDrawable(null, bitmap);
     }
 
     /**
      * Drawable转Bitmap
      */
-    public static Bitmap drawable2Bitmap(Drawable drawable) {
+    @Nullable public static Bitmap drawable2Bitmap(Drawable drawable) {
+        if (drawable == null){
+            return null;
+        }
         BitmapDrawable bd = (BitmapDrawable) drawable;
         return bd.getBitmap();
     }
@@ -66,6 +78,18 @@ public class BitmapUtils {
         return bmp;
     }
 
+    /**
+     * scale image
+     */
+    public static Bitmap scaleImage(Bitmap org, float scaleWidth, float scaleHeight) {
+        if (org == null) {
+            return null;
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        return Bitmap.createBitmap(org, 0, 0, org.getWidth(), org.getHeight(), matrix, true);
+    }
 
     /**
      * 得到bitmap的大小

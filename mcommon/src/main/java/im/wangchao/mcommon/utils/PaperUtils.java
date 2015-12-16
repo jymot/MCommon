@@ -8,7 +8,9 @@ package im.wangchao.mcommon.utils;
  * <p>Time         : 下午3:06.</p>
  */
 public class PaperUtils {
-    private PaperUtils(){}
+    private PaperUtils(){
+        throw new AssertionError();
+    }
 
     //todo use paper
 }
