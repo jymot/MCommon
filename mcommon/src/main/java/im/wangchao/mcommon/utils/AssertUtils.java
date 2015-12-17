@@ -8,6 +8,9 @@ package im.wangchao.mcommon.utils;
  * <p>Time         : 下午2:10.</p>
  */
 public class AssertUtils {
+    private AssertUtils(){
+        throw new AssertionError();
+    }
 
     /**
      * asserts
