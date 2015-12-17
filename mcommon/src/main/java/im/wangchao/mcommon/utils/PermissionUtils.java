@@ -19,7 +19,7 @@ public class PermissionUtils {
     /**
      * check permission
      */
-    public boolean hasPermission(Context context, String permission) {
+    public static boolean hasPermission(Context context, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int result = context.checkSelfPermission(permission);
             return PackageManager.PERMISSION_GRANTED == result;
