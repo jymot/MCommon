@@ -23,7 +23,6 @@ public class DESEncryptUtils {
      * 密钥算法
      */
     private static final String KEY_ALGORITHM_3DES = "desede";
-
     private static final String KEY_ALGORITHM_DES = "des";
 
     /**
@@ -53,6 +52,14 @@ public class DESEncryptUtils {
         return encodeECB(KEY_ALGORITHM_3DES, CIPHER_ALGORITHM_ECB_3DES, key, data);
     }
 
+    /**
+     * ECB DES 加密
+     *
+     * @param key   byte[]
+     * @param data  byte[]
+     * @return byte[]
+     * @throws Exception
+     */
     public static byte[] desEncodeECB(byte[] key, byte[] data)
             throws Exception {
         return encodeECB(KEY_ALGORITHM_DES, CIPHER_ALGORITHM_ECB_DES, key, data);
@@ -71,6 +78,14 @@ public class DESEncryptUtils {
         return decodeECB(KEY_ALGORITHM_3DES, CIPHER_ALGORITHM_ECB_3DES, key, data);
     }
 
+    /**
+     * ECB DES 解密
+     *
+     * @param key   byte[]
+     * @param data  byte[]
+     * @return byte[]
+     * @throws Exception
+     */
     public static byte[] desDecodeECB(byte[] key, byte[] data)
             throws Exception {
         return decodeECB(KEY_ALGORITHM_DES, CIPHER_ALGORITHM_ECB_DES, key, data);
@@ -90,6 +105,15 @@ public class DESEncryptUtils {
         return encodeCBC(KEY_ALGORITHM_3DES, CIPHER_ALGORITHM_CBC_3DES, key, keyiv, data);
     }
 
+    /**
+     * CBC DES 加密
+     *
+     * @param key   byte[]
+     * @param keyiv byte[]
+     * @param data  byte[]
+     * @return byte[]
+     * @throws Exception
+     */
     public static byte[] desEncodeCBC(byte[] key, byte[] keyiv, byte[] data)
             throws Exception {
         return encodeCBC(KEY_ALGORITHM_DES, CIPHER_ALGORITHM_CBC_DES, key, keyiv, data);
@@ -109,15 +133,30 @@ public class DESEncryptUtils {
         return decodeCBC(KEY_ALGORITHM_3DES, CIPHER_ALGORITHM_CBC_3DES, key, keyiv, data);
     }
 
+    /**
+     * CBC DES 解密
+     *
+     * @param key   byte[]
+     * @param keyiv byte[]
+     * @param data  byte[]
+     * @return byte[]
+     * @throws Exception
+     */
     public static byte[] desDecodeCBC(byte[] key, byte[] keyiv, byte[] data)
             throws Exception {
         return decodeCBC(KEY_ALGORITHM_DES, CIPHER_ALGORITHM_CBC_DES, key, keyiv, data);
     }
 
+    /**
+     * @return make DES key
+     */
     public static byte[] genDESKey() throws NoSuchAlgorithmException {
         return genKey(KEY_ALGORITHM_DES, 56);
     }
 
+    /**
+     * @return make 3DES key
+     */
     public static byte[] gen3DESKey() throws NoSuchAlgorithmException {
         return genKey(KEY_ALGORITHM_3DES, 168);
     }
