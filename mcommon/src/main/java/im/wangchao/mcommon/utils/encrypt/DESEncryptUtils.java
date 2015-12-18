@@ -1,4 +1,4 @@
-package im.wangchao.mcommon.utils;
+package im.wangchao.mcommon.utils.encrypt;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
