@@ -14,8 +14,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLConnection;
 
 /**
  * <p>Description  : IOUtils.</p>
@@ -86,6 +88,17 @@ public class IOUtils {
                 throw rethrown;
             } catch (Exception ignored) {
             }
+        }
+    }
+
+    /**
+     * Closes a URLConnection.
+     *
+     * @param conn the connection to close.
+     */
+    public static void closeQuietly(final URLConnection conn) {
+        if (conn instanceof HttpURLConnection) {
+            ((HttpURLConnection) conn).disconnect();
         }
     }
 
