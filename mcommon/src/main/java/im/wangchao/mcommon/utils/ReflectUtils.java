@@ -1,5 +1,7 @@
 package im.wangchao.mcommon.utils;
 
+import java.lang.reflect.Modifier;
+
 /**
  * <p>Description  : ReflectUtils.</p>
  * <p/>
@@ -10,5 +12,23 @@ package im.wangchao.mcommon.utils;
 public class ReflectUtils {
     private ReflectUtils(){
         throw new AssertionError();
+    }
+
+    /**
+     * Learn whether the specified class is generally accessible, i.e. is
+     * declared in an entirely {@code public} manner.
+     * @param type to check
+     * @return {@code true} if {@code type} and any enclosing classes are
+     *         {@code public}.
+     */
+    private static boolean isAccessible(final Class<?> type) {
+        Class<?> cls = type;
+        while (cls != null) {
+            if (!Modifier.isPublic(cls.getModifiers())) {
+                return false;
+            }
+            cls = cls.getEnclosingClass();
+        }
+        return true;
     }
 }
