@@ -166,13 +166,18 @@ public class IOUtils {
             in = new BufferedInputStream(in);
         }
         Reader reader = new InputStreamReader(in, charset);
-        StringBuilder sb = new StringBuilder();
-        char[] buf = new char[1024];
-        int len;
-        while ((len = reader.read(buf)) >= 0) {
-            sb.append(buf, 0, len);
+        try {
+            StringBuilder sb = new StringBuilder();
+            char[] buf = new char[1024];
+            int len;
+            while ((len = reader.read(buf)) >= 0) {
+                sb.append(buf, 0, len);
+            }
+            return sb.toString().trim();
+        } finally {
+            closeQuietly(reader);
         }
-        return sb.toString().trim();
+
     }
 
     /**
@@ -189,10 +194,14 @@ public class IOUtils {
      */
     public static void writeStr(OutputStream out, String str, String charset) throws IOException {
         if (TextUtils.isEmpty(charset)) charset = "UTF-8";
-
-        Writer writer = new OutputStreamWriter(out, charset);
-        writer.write(str);
-        writer.flush();
+        Writer writer = null;
+        try{
+            writer = new OutputStreamWriter(out, charset);
+            writer.write(str);
+            writer.flush();
+        } finally {
+            closeQuietly(writer);
+        }
     }
 
     /**

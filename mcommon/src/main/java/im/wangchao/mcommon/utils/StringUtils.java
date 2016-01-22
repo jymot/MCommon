@@ -1,5 +1,7 @@
 package im.wangchao.mcommon.utils;
 
+import java.math.BigInteger;
+
 /**
  * <p>Description  : StringUtils.</p>
  * <p/>
@@ -298,4 +300,13 @@ public class StringUtils {
         return str;
     }
 
+    public static String toHexString(byte[] bytes, int lengthToPad) {
+        BigInteger hash = new BigInteger(1, bytes);
+        String digest = hash.toString(16);
+
+        while (digest.length() < lengthToPad) {
+            digest = "0" + digest;
+        }
+        return digest;
+    }
 }
