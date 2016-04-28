@@ -1,13 +1,4 @@
 apply plugin: 'com.android.library'
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1"
-    }
-}
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -35,4 +26,4 @@ dependencies {
     compile 'io.paperdb:paperdb:1.1'
 }
 
-apply from: 'https://raw.githubusercontent.com/motcwang/Utils/master/bintray.gradle'
+apply from: 'https://raw.githubusercontent.com/motcwang/Utils/master/bintray-publish/bintray.gradle'
