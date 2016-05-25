@@ -73,7 +73,7 @@ public class PackageUtils {
      * @param filePath
      * @return
      */
-    public static final int install(Context context, String filePath) {
+    public static int install(Context context, String filePath) {
         if (PackageUtils.isSystemApplication(context) || ShellUtils.checkRootPermission()) {
             return installSilent(context, filePath);
         }

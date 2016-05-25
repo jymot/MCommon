@@ -1,5 +1,7 @@
 package im.wangchao.mcommon.utils;
 
+import android.support.annotation.NonNull;
+
 import java.lang.reflect.Modifier;
 
 /**
@@ -21,7 +23,7 @@ public class ReflectUtils {
      * @return {@code true} if {@code type} and any enclosing classes are
      *         {@code public}.
      */
-    private static boolean isAccessible(final Class<?> type) {
+    public static boolean isAccessible(@NonNull final Class<?> type) {
         Class<?> cls = type;
         while (cls != null) {
             if (!Modifier.isPublic(cls.getModifiers())) {

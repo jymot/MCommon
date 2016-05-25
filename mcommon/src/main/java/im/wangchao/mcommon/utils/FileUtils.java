@@ -1,5 +1,7 @@
 package im.wangchao.mcommon.utils;
 
+import android.support.annotation.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,7 +26,8 @@ public class FileUtils {
     }
 
     /**
-     * read File to bytes
+     * <p>read File to bytes</p>
+     *
      * @param file  File
      * @throws IOException
      */
@@ -38,7 +41,8 @@ public class FileUtils {
     }
 
     /**
-     * write bytes to File
+     * <p>write bytes to File</p>
+     *
      * @param file      File
      * @param content   bytes
      * @throws IOException
@@ -53,7 +57,8 @@ public class FileUtils {
     }
 
     /**
-     * read file to String, charset = UTF-8
+     * <p>read file to String, charset = UTF-8</p>
+     *
      * @param file  File
      * @throws IOException
      */
@@ -62,7 +67,8 @@ public class FileUtils {
     }
 
     /**
-     * read file to String
+     * <p>read file to String</p>
+     *
      * @param file      File
      * @param charset   charset
      * @throws IOException
@@ -77,7 +83,8 @@ public class FileUtils {
     }
 
     /**
-     * write chars to File, charset = UTF-8
+     * <p>write chars to File, charset = UTF-8</p>
+     *
      * @param file  File
      * @param text  chars
      * @throws IOException
@@ -86,9 +93,9 @@ public class FileUtils {
         writeChars(file, "UTF-8", text);
     }
 
-
     /**
-     * write chars to File
+     * <p>write chars to File</p>
+     *
      * @param file File
      * @param charset Charset
      * @param text  chars
@@ -163,40 +170,65 @@ public class FileUtils {
     }
 
     /**
-     * create file
+     * Create File
+     * @return File
      * @throws IOException
      */
-    public static boolean createFile(File file) throws IOException {
+    @Nullable public static File createFile(File file) throws IOException {
         if (file == null){
-            return false;
+            return null;
         }
         if (file.exists()){
-            return true;
+            return null;
         }
         File parent = file.getParentFile();
-        return createDir(parent) && file.createNewFile();
-    }
-
-    public static boolean createFile(String path) throws IOException {
-        return StringUtils.isNotEmpty(path) && createFile(new File(path));
+        if (createDir(parent) != null && file.createNewFile()){
+            return file;
+        }
+        return null;
     }
 
     /**
-     * create dir
+     * Create File
+     * @param path File path
+     * @return File
+     * @throws IOException
      */
-    public static boolean createDir(File file){
-        return file != null && (file.exists() || file.mkdirs());
+    @Nullable public static File createFile(String path) throws IOException {
+        if (StringUtils.isEmpty(path)){
+            return null;
+        }
+        return createFile(new File(path));
     }
 
     /**
-     * create dir
+     * Create Directory
+     * @param file target file
+     * @return  Directory
      */
-    public static boolean createDir(String path){
-        return StringUtils.isNotEmpty(path) && createDir(new File(path));
+    @Nullable public static File createDir(File file){
+        if (file != null && (file.exists() || file.mkdirs())){
+            return file;
+        }
+        return null;
     }
 
     /**
-     * delete file
+     * Create Directory
+     * @param path target file path
+     * @return  Directory
+     */
+    @Nullable public static File createDir(String path){
+        if (StringUtils.isEmpty(path)){
+            return null;
+        }
+        return createDir(new File(path));
+    }
+
+    /**
+     * Delete File
+     * @param file target file
+     * @return  boolean
      */
     public static boolean deleteFile(File file) {
         if (file == null || !file.exists())
@@ -213,7 +245,9 @@ public class FileUtils {
     }
 
     /**
-     * delete file
+     * Delete File
+     * @param path target file path
+     * @return  boolean
      */
     public static boolean deleteFile(String path){
         return StringUtils.isNotEmpty(path) && deleteFile(new File(path));

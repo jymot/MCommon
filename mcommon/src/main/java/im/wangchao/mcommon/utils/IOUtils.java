@@ -205,6 +205,18 @@ public class IOUtils {
     }
 
     /**
+     * Write {@code out}
+     * @throws IOException
+     */
+    public static void writeBytes(OutputStream out, byte[] content) throws IOException {
+        if (!(out instanceof BufferedOutputStream)){
+            out = new BufferedOutputStream(out);
+        }
+        out.write(content);
+        out.flush();
+    }
+
+    /**
      * Copy {@code in} to {@code out}
      * @throws IOException
      */

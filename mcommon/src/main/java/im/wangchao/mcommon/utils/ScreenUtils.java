@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -36,7 +37,7 @@ public class ScreenUtils {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenDensity{}
 
-    @ScreenDensity public static int initDisply(Context context){
+    @ScreenDensity public static int initDisply(@NonNull Context context){
         int eScreenDensity;
         //初始化屏幕密度
         DisplayMetrics dm = context.getApplicationContext().getResources().getDisplayMetrics();
@@ -58,7 +59,7 @@ public class ScreenUtils {
     /**
      * check pad
      */
-    public static boolean isPad(Context context) {
+    public static boolean isPad(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         DisplayMetrics dm = new DisplayMetrics();
@@ -74,7 +75,7 @@ public class ScreenUtils {
     /**
      * 设置当前界面为全屏模式
      */
-    public static void setFullScreen(Activity activity) {
+    public static void setFullScreen(@NonNull Activity activity) {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
@@ -82,8 +83,10 @@ public class ScreenUtils {
     /**
      * 如果当前为全屏，那么取消全屏模式，回到正常的模式
      */
-    public static void cancelFullScreen(Activity activity) {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    public static void cancelFullScreen(@NonNull Activity activity) {
+        if (isFullScreen(activity)){
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
     }
 
     /**
@@ -91,7 +94,7 @@ public class ScreenUtils {
      *
      * @return 如果是true，那么当前就是全屏
      */
-    public static boolean isFullScreen(Activity activity) {
+    public static boolean isFullScreen(@NonNull Activity activity) {
         int flag = activity.getWindow().getAttributes().flags;
         return (flag & WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 == WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -103,13 +106,9 @@ public class ScreenUtils {
      * @param activity 当前的activity
      * @return 如果true就是竖屏
      */
-    public static boolean isVerticalScreen(Activity activity) {
+    public static boolean isVerticalScreen(@NonNull Activity activity) {
         int flag = activity.getResources().getConfiguration().orientation;
-        if (flag == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return flag != 0;
     }
 
     /**
@@ -117,7 +116,7 @@ public class ScreenUtils {
      *
      * @return 顶部状态栏高度
      */
-    public static int getStatusBarHeight(Context context) {
+    public static int getStatusBarHeight(@NonNull Context context) {
         Class<?> c = null;
         Object obj = null;
         java.lang.reflect.Field field = null;
@@ -141,7 +140,7 @@ public class ScreenUtils {
      *
      * @return 装载了屏幕长宽的数组，int[0] = width,int[1] = height
      */
-    public static int[] getScreenCompat(Activity activity) {
+    public static int[] getScreenCompat(@NonNull Activity activity) {
         //>= API13
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB_MR1) {
             Display display = activity.getWindowManager().getDefaultDisplay();
@@ -161,7 +160,7 @@ public class ScreenUtils {
     /**
      * 获得屏幕高度
      */
-    public static int getScreenWidth(Context context) {
+    public static int getScreenWidth(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
@@ -171,7 +170,7 @@ public class ScreenUtils {
     /**
      * 获得屏幕宽度
      */
-    public static int getScreenHeight(Context context) {
+    public static int getScreenHeight(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);

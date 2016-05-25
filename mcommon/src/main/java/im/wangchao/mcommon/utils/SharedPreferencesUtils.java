@@ -2,6 +2,7 @@ package im.wangchao.mcommon.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.lang.reflect.Method;
@@ -28,7 +29,7 @@ public class SharedPreferencesUtils {
      * @param key       Key
      * @param value     Value
      */
-    public static void put(Context context, String key, Object value){
+    public static void put(@NonNull Context context, @NonNull String key, Object value){
         final SharedPreferences sp = getSharedPreferences(context);
         final SharedPreferences.Editor editor = sp.edit();
 
@@ -57,7 +58,7 @@ public class SharedPreferencesUtils {
      * @param <T>       Target value
      * @return          (T)value, may be null
      */
-    @Nullable public static <T> T get(Context context, String key){
+    @Nullable public static <T> T get(@NonNull Context context, @NonNull String key){
         return opt(context, key, null);
     }
 
@@ -70,7 +71,7 @@ public class SharedPreferencesUtils {
      * @param <T>           Target value
      * @return              (T)value, may be null
      */
-    @Nullable @SuppressWarnings({"unchecked"})public static <T> T opt(Context context, String key, T defaultValue){
+    @Nullable @SuppressWarnings({"unchecked"})public static <T> T opt(@NonNull Context context, @NonNull String key, T defaultValue){
         final SharedPreferences sp = getSharedPreferences(context);
         final Map<String, ?> map = sp.getAll();
         T t;
@@ -90,7 +91,7 @@ public class SharedPreferencesUtils {
     /**
      * remove key
      */
-    public static void remove(Context context, String key) {
+    public static void remove(@NonNull Context context, @NonNull String key) {
         final SharedPreferences sp = getSharedPreferences(context);
         final SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
@@ -100,7 +101,7 @@ public class SharedPreferencesUtils {
     /**
      * clear editor
      */
-    public static void clear(Context context) {
+    public static void clear(@NonNull Context context) {
         final SharedPreferences sp = getSharedPreferences(context);
         final SharedPreferences.Editor editor = sp.edit();
         editor.clear();
@@ -110,7 +111,7 @@ public class SharedPreferencesUtils {
     /**
      * contains key
      */
-    public static boolean contains(Context context, String key) {
+    public static boolean contains(@NonNull Context context, @NonNull String key) {
         final SharedPreferences sp = getSharedPreferences(context);
         return sp.contains(key);
     }
@@ -118,7 +119,7 @@ public class SharedPreferencesUtils {
     /**
      * get all
      */
-    public static Map<String, ?> getAll(Context context) {
+    public static Map<String, ?> getAll(@NonNull Context context) {
         final SharedPreferences sp = getSharedPreferences(context);
         return sp.getAll();
     }
@@ -126,7 +127,7 @@ public class SharedPreferencesUtils {
     /**
      * get SharedPreferences instance
      */
-    private static SharedPreferences getSharedPreferences(Context context){
+    private static SharedPreferences getSharedPreferences(@NonNull Context context){
         if (sp == null){
             synchronized (SharedPreferencesUtils.class){
                 if (sp == null){

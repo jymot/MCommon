@@ -300,6 +300,13 @@ public class StringUtils {
         return str;
     }
 
+    /**
+     * <p>Bytes to hex string</p>
+     *
+     * @param bytes this source bytes array
+     * @param lengthToPad length to pad
+     * @return hex string
+     */
     public static String toHexString(byte[] bytes, int lengthToPad) {
         BigInteger hash = new BigInteger(1, bytes);
         String digest = hash.toString(16);

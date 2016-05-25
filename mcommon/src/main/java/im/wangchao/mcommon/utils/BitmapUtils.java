@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -40,9 +39,14 @@ public class BitmapUtils {
         if (bitmap == null){
             return null;
         }
-        ByteArrayOutputStream o = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, o);
-        return o.toByteArray();
+        ByteArrayOutputStream out = null;
+        try {
+            out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            return out.toByteArray();
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
     }
 
     /**
@@ -76,33 +80,6 @@ public class BitmapUtils {
             return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
         }
         return bmp;
-    }
-
-    /**
-     * scale image
-     */
-    public static Bitmap scaleImage(Bitmap org, float scaleWidth, float scaleHeight) {
-        if (org == null) {
-            return null;
-        }
-
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        return Bitmap.createBitmap(org, 0, 0, org.getWidth(), org.getHeight(), matrix, true);
-    }
-
-    /**
-     * 得到bitmap的大小
-     */
-    public static int getBitmapSize(Bitmap bitmap) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {    //API 19
-            return bitmap.getAllocationByteCount();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {//API 12
-            return bitmap.getByteCount();
-        }
-        // 在低版本中用一行的字节x高度
-        return bitmap.getRowBytes() * bitmap.getHeight();                //earlier version
     }
 
     /**
