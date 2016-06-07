@@ -52,6 +52,6 @@ ext.deps = [
         autoservice       : 'com.google.auto.service:auto-service:1.0-rc2',
         autocommon        : 'com.google.auto:auto-common:0.6',
 
-        mhttp             : 'im.wangchao:mhttp:1.0.0',
+        mhttp             : 'im.wangchao:mhttp:1.1.0',
         paper             : 'io.paperdb:paperdb:1.1'
 ]
