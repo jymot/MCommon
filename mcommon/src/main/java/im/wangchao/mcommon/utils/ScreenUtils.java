@@ -57,7 +57,7 @@ public class ScreenUtils {
     }
 
     /**
-     * check pad
+     * @return Whether to pad.
      */
     public static boolean isPad(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -73,7 +73,32 @@ public class ScreenUtils {
     }
 
     /**
-     * 设置当前界面为全屏模式
+     * Set the {@code activity} disable screenshot.
+     */
+    public static void disabledScreenshot(@NonNull Activity activity){
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    }
+
+    /**
+     * Cancel disable screenshot.
+     */
+    public static void cancelDisabledScreenshot(@NonNull Activity activity){
+        if (isDisabledScreenshot(activity)){
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
+    }
+
+    /**
+     * @return Whether to disable screenshot.
+     */
+    public static boolean isDisabledScreenshot(@NonNull Activity activity){
+        int flag = activity.getWindow().getAttributes().flags;
+        return (flag & WindowManager.LayoutParams.FLAG_SECURE)
+                == WindowManager.LayoutParams.FLAG_SECURE;
+    }
+
+    /**
+     * Set the {@code activity} full screen.
      */
     public static void setFullScreen(@NonNull Activity activity) {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -81,7 +106,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 如果当前为全屏，那么取消全屏模式，回到正常的模式
+     * If the current {@code activity} for full screen, then cancel.
      */
     public static void cancelFullScreen(@NonNull Activity activity) {
         if (isFullScreen(activity)){
@@ -90,9 +115,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 判断当前手机是否是全屏
-     *
-     * @return 如果是true，那么当前就是全屏
+     * @return Whether the current {@code activity} full screen.
      */
     public static boolean isFullScreen(@NonNull Activity activity) {
         int flag = activity.getWindow().getAttributes().flags;
@@ -101,10 +124,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 判断当前屏幕是否是横屏
-     *
-     * @param activity 当前的activity
-     * @return 如果true就是竖屏
+     * @return Whether this current {@code activity} vertical screen.
      */
     public static boolean isVerticalScreen(@NonNull Activity activity) {
         int flag = activity.getResources().getConfiguration().orientation;
@@ -112,9 +132,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 获取顶部状态栏高度
-     *
-     * @return 顶部状态栏高度
+     * @return Status bar height.
      */
     public static int getStatusBarHeight(@NonNull Context context) {
         Class<?> c = null;
@@ -136,9 +154,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 获取屏幕长宽,
-     *
-     * @return 装载了屏幕长宽的数组，int[0] = width,int[1] = height
+     * @return Screen size, int[0] = width, int[1] = height.
      */
     public static int[] getScreenCompat(@NonNull Activity activity) {
         //>= API13
@@ -158,7 +174,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 获得屏幕高度
+     * @return Screen width.
      */
     public static int getScreenWidth(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -168,7 +184,7 @@ public class ScreenUtils {
     }
 
     /**
-     * 获得屏幕宽度
+     * @return Screen height.
      */
     public static int getScreenHeight(@NonNull Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
