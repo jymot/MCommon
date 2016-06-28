@@ -37,7 +37,7 @@ public class ScreenUtils {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenDensity{}
 
-    @ScreenDensity public static int initDisply(@NonNull Context context){
+    @ScreenDensity public static int initDisplay(@NonNull Context context){
         int eScreenDensity;
         //初始化屏幕密度
         DisplayMetrics dm = context.getApplicationContext().getResources().getDisplayMetrics();
