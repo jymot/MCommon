@@ -4,9 +4,11 @@ import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -170,6 +172,36 @@ public class FileUtils {
     }
 
     /**
+     * append content to file
+     * @throws IOException
+     */
+    public static void appendContentFile(String content, File file) throws IOException {
+        if (StringUtils.isEmpty(content) || file == null || !file.exists()){
+            return;
+        }
+
+        BufferedWriter bufferedWriter = null;
+        try {
+            bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+            bufferedWriter.append(content);
+            bufferedWriter.flush();
+        } finally {
+            IOUtils.closeQuietly(bufferedWriter);
+        }
+    }
+
+    /**
+     * append content to file
+     * @throws IOException
+     */
+    public static void appendContentFile(String content, String filePath) throws IOException {
+        if (StringUtils.isEmpty(filePath)){
+            return;
+        }
+        appendContentFile(content, new File(filePath));
+    }
+
+    /**
      * Create File
      * @return File
      * @throws IOException
@@ -179,7 +211,7 @@ public class FileUtils {
             return null;
         }
         if (file.exists()){
-            return null;
+            return file;
         }
         File parent = file.getParentFile();
         if (createDir(parent) != null && file.createNewFile()){
