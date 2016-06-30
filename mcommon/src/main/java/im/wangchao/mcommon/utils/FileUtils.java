@@ -285,4 +285,60 @@ public class FileUtils {
         return StringUtils.isNotEmpty(path) && deleteFile(new File(path));
     }
 
+    /**
+     * @return File suffix.
+     */
+    public static String getFileSuffix(String path){
+        if (StringUtils.isEmpty(path)){
+            return StringUtils.EMPTY;
+        }
+        return getFileSuffix(new File(path));
+    }
+
+    /**
+     * @return File suffix.
+     */
+    public static String getFileSuffix(File file) {
+        if (file == null || !file.exists() || file.isDirectory())
+            return StringUtils.EMPTY;
+
+        String name = file.getName();
+        int lastIndex = name.lastIndexOf(".");
+        if (name.startsWith(".") || lastIndex == -1)
+            return StringUtils.EMPTY;
+
+        return name.substring(lastIndex + 1, name.length());
+    }
+
+    /**
+     * @return A file name that does not contain a suffix.
+     */
+    public static String getFileRealName(String path){
+        if (StringUtils.isEmpty(path)){
+            return StringUtils.EMPTY;
+        }
+        return getFileRealName(new File(path));
+    }
+
+    /**
+     * @return A file name that does not contain a suffix.
+     */
+    public static String getFileRealName(File file) {
+        if (file == null)
+            return StringUtils.EMPTY;
+
+        String name = file.getName();
+        if (file.isDirectory()) {
+            return name;
+        }
+
+        int index = name.lastIndexOf(".");
+        String realName;
+        if (name.startsWith(".") || index == -1) {
+            realName = name;
+        } else {
+            realName = name.substring(0, name.lastIndexOf("."));
+        }
+        return realName;
+    }
 }
