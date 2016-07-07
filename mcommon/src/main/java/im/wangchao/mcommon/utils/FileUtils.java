@@ -28,6 +28,20 @@ public class FileUtils {
     }
 
     /**
+     * @return File exist.
+     */
+    public static boolean isExist(File file) {
+        return file != null && file.exists();
+    }
+
+    /**
+     * @return File exist.
+     */
+    public static boolean isExist(String filePath) {
+        return StringUtils.isNotEmpty(filePath) && new File(filePath).exists();
+    }
+
+    /**
      * <p>read File to bytes</p>
      *
      * @param file  File
