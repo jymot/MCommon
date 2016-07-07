@@ -42,9 +42,9 @@ public class FileUtils {
     }
 
     /**
-     * <p>read File to bytes</p>
+     * Read File to bytes.
      *
-     * @param file  File
+     * @return bytes
      * @throws IOException
      */
     public static byte[] readBytes(File file) throws IOException {
@@ -57,10 +57,18 @@ public class FileUtils {
     }
 
     /**
-     * <p>write bytes to File</p>
+     * Read File to bytes.
      *
-     * @param file      File
-     * @param content   bytes
+     * @return bytes
+     * @throws IOException
+     */
+    public static byte[] readBytes(String filePath) throws IOException {
+        return readBytes(new File(filePath));
+    }
+
+    /**
+     * Write bytes to File.
+     *
      * @throws IOException
      */
     public static void writeBytes(File file, byte[] content) throws IOException {
@@ -76,9 +84,17 @@ public class FileUtils {
     }
 
     /**
-     * <p>read file to String, charset = UTF-8</p>
+     * Write bytes to File.
      *
-     * @param file  File
+     * @throws IOException
+     */
+    public static void writeBytes(String filePath, byte[] content) throws IOException {
+        writeBytes(new File(filePath), content);
+    }
+
+    /**
+     * Read file to String with charset UTF-8.
+     *
      * @throws IOException
      */
     public static String readUtf8(File file) throws IOException {
@@ -86,10 +102,17 @@ public class FileUtils {
     }
 
     /**
-     * <p>read file to String</p>
+     * Read file to String with charset UTF-8.
      *
-     * @param file      File
-     * @param charset   charset
+     * @throws IOException
+     */
+    public static String readUtf8(String filePath) throws IOException {
+        return readUtf8(new File(filePath));
+    }
+
+    /**
+     * Read file to String.
+     *
      * @throws IOException
      */
     public static String readChars(File file, String charset) throws IOException {
@@ -102,10 +125,17 @@ public class FileUtils {
     }
 
     /**
-     * <p>write chars to File, charset = UTF-8</p>
+     * Read file to String.
      *
-     * @param file  File
-     * @param text  chars
+     * @throws IOException
+     */
+    public static String readChars(String filePath, String charset) throws IOException {
+        return readChars(new File(filePath), charset);
+    }
+
+    /**
+     * Write chars to File with charset UTF-8.
+     *
      * @throws IOException
      */
     public static void writeUtf8(File file, CharSequence text) throws IOException {
@@ -113,11 +143,17 @@ public class FileUtils {
     }
 
     /**
-     * <p>write chars to File</p>
+     * Write chars to File with charset UTF-8.
      *
-     * @param file File
-     * @param charset Charset
-     * @param text  chars
+     * @throws IOException
+     */
+    public static void writeUtf8(String filePath, CharSequence text) throws IOException {
+        writeUtf8(new File(filePath),  text);
+    }
+
+    /**
+     * Write chars to File.
+     *
      * @throws IOException
      */
     public static void writeChars(File file, String charset, CharSequence text) throws IOException {
@@ -133,7 +169,16 @@ public class FileUtils {
     }
 
     /**
-     * copy file
+     * Write chars to File.
+     *
+     * @throws IOException
+     */
+    public static void writeChars(String filePath, String charset, CharSequence text) throws IOException {
+        writeChars(new File(filePath), charset, text);
+    }
+
+    /**
+     * Copy file.
      * @throws IOException
      */
     public static void copyFile(File from, File to) throws IOException {
@@ -154,7 +199,7 @@ public class FileUtils {
     }
 
     /**
-     * copy file
+     * Copy file.
      * @throws IOException
      */
     public static void copyFile(String fromFilename, String toFilename) throws IOException {
@@ -162,7 +207,7 @@ public class FileUtils {
     }
 
     /**
-     * read file to Object
+     * Read file to Object.
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -178,7 +223,17 @@ public class FileUtils {
     }
 
     /**
-     * write file to Object
+     * Read file to Object.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public static Object readObject(String filePath) throws IOException,
+            ClassNotFoundException {
+        return readObject(new File(filePath));
+    }
+
+    /**
+     * Write file to Object.
      * @throws IOException
      */
     public static void writeObject(File file, Object object) throws IOException {
@@ -198,7 +253,15 @@ public class FileUtils {
     }
 
     /**
-     * append content to file
+     * Write file to Object.
+     * @throws IOException
+     */
+    public static void writeObject(String filePath, Object object) throws IOException {
+        writeObject(new File(filePath), object);
+    }
+
+    /**
+     * Append content to file.
      * @throws IOException
      */
     public static void appendContentFile(File file, String content) throws IOException {
@@ -217,7 +280,7 @@ public class FileUtils {
     }
 
     /**
-     * append content to file
+     * Append content to file.
      * @throws IOException
      */
     public static void appendContentFile(String filePath, String content) throws IOException {
@@ -228,7 +291,7 @@ public class FileUtils {
     }
 
     /**
-     * Create File
+     * Create File.
      * @return File
      * @throws IOException
      */
@@ -247,7 +310,7 @@ public class FileUtils {
     }
 
     /**
-     * Create File
+     * Create File.
      * @param path File path
      * @return File
      * @throws IOException
@@ -260,7 +323,7 @@ public class FileUtils {
     }
 
     /**
-     * Create Directory
+     * Create Directory.
      * @param file target file
      * @return  Directory
      */
@@ -272,7 +335,7 @@ public class FileUtils {
     }
 
     /**
-     * Create Directory
+     * Create Directory.
      * @param path target file path
      * @return  Directory
      */
@@ -284,8 +347,7 @@ public class FileUtils {
     }
 
     /**
-     * Delete File
-     * @param file target file
+     * Delete File.
      * @return  boolean
      */
     public static boolean deleteFile(File file) {
@@ -303,8 +365,7 @@ public class FileUtils {
     }
 
     /**
-     * Delete File
-     * @param path target file path
+     * Delete File.
      * @return  boolean
      */
     public static boolean deleteFile(String path){
