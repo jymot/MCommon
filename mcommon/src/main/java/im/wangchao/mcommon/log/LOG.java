@@ -66,12 +66,9 @@ public class LOG {
      */
     public static void v(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log : array) {
-            if (tag.equals(log.getTag())) {
-                log.v(message);
-            }
+            log.v(tag, message);
         }
 
     }
@@ -88,12 +85,9 @@ public class LOG {
      */
     public static void v(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array){
-            if (tag.equals(log.getTag())){
-                log.v(t, message);
-            }
+            log.v(tag, t, message);
         }
     }
 
@@ -109,12 +103,9 @@ public class LOG {
      */
     public static void d(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array){
-            if (tag.equals(log.getTag())){
-                log.d(message);
-            }
+            log.d(tag, message);
         }
     }
 
@@ -130,12 +121,9 @@ public class LOG {
      */
     public static void d(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.d(t, message);
-            }
+            log.d(tag, message);
         }
     }
 
@@ -151,12 +139,9 @@ public class LOG {
      */
     public static void i(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.i(message);
-            }
+            log.i(tag, message);
         }
     }
 
@@ -172,12 +157,9 @@ public class LOG {
      */
     public static void i(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.i(t, message);
-            }
+            log.i(tag, t, message);
         }
     }
 
@@ -193,12 +175,9 @@ public class LOG {
      */
     public static void w(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.w(message);
-            }
+            log.w(tag, message);
         }
     }
 
@@ -214,12 +193,9 @@ public class LOG {
      */
     public static void w(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.w(t, message);
-            }
+            log.w(tag, t, message);
         }
     }
 
@@ -235,12 +211,9 @@ public class LOG {
      */
     public static void e(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.e(message);
-            }
+            log.e(tag, message);
         }
     }
 
@@ -248,10 +221,7 @@ public class LOG {
      * Log an error exception and a message.
      */
     public static void e(Throwable t, @NonNull String message) {
-        AbsLog[] array = logAsArray;
-        for (AbsLog log: array) {
-            log.e(t, message);
-        }
+        e(StringUtils.EMPTY, t, message);
     }
 
     /**
@@ -259,12 +229,9 @@ public class LOG {
      */
     public static void e(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.e(t, message);
-            }
+            log.e(tag, t, message);
         }
     }
 
@@ -280,12 +247,9 @@ public class LOG {
      */
     public static void wtf(String tag, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.wtf(message);
-            }
+            log.wtf(tag, message);
         }
     }
 
@@ -301,12 +265,9 @@ public class LOG {
      */
     public static void wtf(String tag, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.wtf(t, message);
-            }
+            log.wtf(tag, t, message);
         }
     }
 
@@ -322,12 +283,9 @@ public class LOG {
      */
     public static void log(String tag, int priority, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.log(priority, message);
-            }
+            log.log(tag, priority, message);
         }
     }
 
@@ -343,23 +301,10 @@ public class LOG {
      */
     public static void log(String tag, int priority, Throwable t, @NonNull String message) {
         AbsLog[] array = logAsArray;
-        tag = ensureTag(tag);
 
         for (AbsLog log: array) {
-            if (tag.equals(log.getTag())){
-                log.log(priority, t, message);
-            }
+            log.log(tag, priority, t, message);
         }
-    }
-
-    /**
-     * @return Non null tag.
-     */
-    private static String ensureTag(String tag){
-        if (StringUtils.isEmpty(tag)){
-            return getDefault().getTag();
-        }
-        return tag;
     }
 
     //Default

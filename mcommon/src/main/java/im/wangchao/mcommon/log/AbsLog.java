@@ -1,7 +1,6 @@
 package im.wangchao.mcommon.log;
 
 import android.util.Log;
-import android.util.SparseArray;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,142 +15,143 @@ import im.wangchao.mcommon.utils.StringUtils;
  * <p>Time         : 下午4:49.</p>
  */
 public abstract class AbsLog {
+    public static final int VERBOSE = Log.VERBOSE;
+    public static final int DEBUG = Log.DEBUG;
+    public static final int INFO = Log.INFO;
+    public static final int WARN = Log.WARN;
+    public static final int ERROR = Log.ERROR;
+    public static final int ASSET = Log.ASSERT;
+    public static final int CLOSE = Log.ASSERT + 1;
 
-    //Tag
-    private String tag;
-    //Save each level is available
-    private final SparseArray<Boolean> loggableArray = new SparseArray<>();
+    private int logLevel;
 
-    public AbsLog tag(String tag){
-        this.tag = tag;
-        return this;
-    }
-
-    /**
-     * Tag
-     */
-    protected String getTag() {
-        return StringUtils.isEmpty(tag) ? this.getClass().getSimpleName() : tag;
-    }
+    private String defaultTag;
 
     protected boolean isLoggable(int priority) {
-        if (loggableArray.size() == 0){
-            return true;
-        }
-        return loggableArray.get(priority);
+        return priority >= logLevel;
     }
 
-    public AbsLog setLoggable(int priority, boolean loggable){
-        synchronized (loggableArray){
-            loggableArray.put(priority, loggable);
-        }
+    public AbsLog setLogLevel(int priority){
+        this.logLevel = priority;
         return this;
+    }
+
+    public AbsLog defaultTag(String defaultTag){
+        this.defaultTag = defaultTag;
+        return this;
+    }
+
+    protected String defaultTag(){
+        return defaultTag;
     }
 
     /**
      * Log a verbose message.
      */
-    public void v(String message) {
-        println(Log.VERBOSE, null, message);
+    public void v(String tag, String message) {
+        println(tag, Log.VERBOSE, null, message);
     }
 
     /**
      * Log a verbose exception and a message.
      */
-    public void v(Throwable t, String message) {
-        println(Log.VERBOSE, t, message);
+    public void v(String tag, Throwable t, String message) {
+        println(tag, Log.VERBOSE, t, message);
     }
 
     /**
      * Log a debug message.
      */
-    public void d(String message) {
-        println(Log.DEBUG, null, message);
+    public void d(String tag, String message) {
+        println(tag, Log.DEBUG, null, message);
     }
 
     /**
      * Log a debug exception and a message.
      */
-    public void d(Throwable t, String message) {
-        println(Log.DEBUG, t, message);
+    public void d(String tag, Throwable t, String message) {
+        println(tag, Log.DEBUG, t, message);
     }
 
     /**
      * Log an info message.
      */
-    public void i(String message) {
-        println(Log.INFO, null, message);
+    public void i(String tag, String message) {
+        println(tag, Log.INFO, null, message);
     }
 
     /**
      * Log an info exception and a message.
      */
-    public void i(Throwable t, String message) {
-        println(Log.INFO, t, message);
+    public void i(String tag, Throwable t, String message) {
+        println(tag, Log.INFO, t, message);
     }
 
     /**
      * Log a warning message.
      */
-    public void w(String message) {
-        println(Log.WARN, null, message);
+    public void w(String tag, String message) {
+        println(tag, Log.WARN, null, message);
     }
 
     /**
      * Log a warning exception and a message.
      */
-    public void w(Throwable t, String message) {
-        println(Log.WARN, t, message);
+    public void w(String tag, Throwable t, String message) {
+        println(tag, Log.WARN, t, message);
     }
 
     /**
      * Log an error message.
      */
-    public void e(String message) {
-        println(Log.ERROR, null, message);
+    public void e(String tag, String message) {
+        println(tag, Log.ERROR, null, message);
     }
 
     /**
      * Log an error exception and a message.
      */
-    public void e(Throwable t, String message) {
-        println(Log.ERROR, t, message);
+    public void e(String tag, Throwable t, String message) {
+        println(tag, Log.ERROR, t, message);
     }
 
     /**
      * Log an assert message.
      */
-    public void wtf(String message) {
-        println(Log.ASSERT, null, message);
+    public void wtf(String tag, String message) {
+        println(tag, Log.ASSERT, null, message);
     }
 
     /**
      * Log an assert exception and a message.
      */
-    public void wtf(Throwable t, String message) {
-        println(Log.ASSERT, t, message);
+    public void wtf(String tag, Throwable t, String message) {
+        println(tag, Log.ASSERT, t, message);
     }
 
     /**
      * Log at {@code priority} a message.
      */
-    public void log(int priority, String message) {
-        println(priority, null, message);
+    public void log(String tag, int priority, String message) {
+        println(tag, priority, null, message);
     }
 
     /**
      * Log at {@code priority} an exception and a message.
      */
-    public void log(int priority, Throwable t, String message) {
-        println(priority, t, message);
+    public void log(String tag, int priority, Throwable t, String message) {
+        println(tag, priority, t, message);
     }
 
     /**
      * Uniform print
      */
-    private void println(int priority, Throwable t, String message) {
+    private void println(String tag, int priority, Throwable t, String message) {
         if (!isLoggable(priority)) {
             return;
+        }
+        if (StringUtils.isEmpty(tag)){
+            tag = defaultTag();
         }
         if (message != null && message.length() == 0) {
             message = null;
@@ -167,7 +167,7 @@ public abstract class AbsLog {
             }
         }
 
-        log(priority, getTag(), message, t);
+        log(priority, tag, message, t);
     }
 
     /**
@@ -187,7 +187,7 @@ public abstract class AbsLog {
     /**
      * Write a log message to its destination. Called for all level-specific methods by default.
      *
-     * @param priority Log level. See {@link Log} for constants.
+     * @param priority Log level. See {@link android.util.Log} for constants.
      * @param tag Explicit or inferred tag.
      * @param message Formatted log message. May be {@code null}, but then {@code t} will not be.
      * @param t Accompanying exceptions. May be {@code null}, but then {@code message} will not be.
