@@ -21,7 +21,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile deps.junit
     compile deps.appcompatv7
-    compile deps.mhttp
+//    compile deps.mhttp
     compile deps.paper
 }
 

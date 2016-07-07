@@ -123,7 +123,7 @@ public class LOG {
         AbsLog[] array = logAsArray;
 
         for (AbsLog log: array) {
-            log.d(tag, message);
+            log.d(tag, t, message);
         }
     }
 
