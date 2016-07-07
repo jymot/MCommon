@@ -50,6 +50,9 @@ public class FileUtils {
      * @throws IOException
      */
     public static void writeBytes(File file, byte[] content) throws IOException {
+        //Write safely.
+        createFile(file);
+
         OutputStream out = new FileOutputStream(file);
         try {
             out.write(content);
@@ -104,6 +107,9 @@ public class FileUtils {
      * @throws IOException
      */
     public static void writeChars(File file, String charset, CharSequence text) throws IOException {
+        //Write safely.
+        createFile(file);
+
         FileOutputStream out = new FileOutputStream(file);
         try{
             IOUtils.writeStr(out, text.toString(), charset);
@@ -117,6 +123,9 @@ public class FileUtils {
      * @throws IOException
      */
     public static void copyFile(File from, File to) throws IOException {
+        //Write safely.
+        createFile(to);
+
         InputStream in = new BufferedInputStream(new FileInputStream(from));
         try {
             OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
@@ -159,6 +168,9 @@ public class FileUtils {
      * @throws IOException
      */
     public static void writeObject(File file, Object object) throws IOException {
+        //Write safely.
+        createFile(file);
+
         FileOutputStream fileOut = new FileOutputStream(file);
         ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(fileOut));
         try {
@@ -175,7 +187,7 @@ public class FileUtils {
      * append content to file
      * @throws IOException
      */
-    public static void appendContentFile(String content, File file) throws IOException {
+    public static void appendContentFile(File file, String content) throws IOException {
         if (StringUtils.isEmpty(content) || file == null || !file.exists()){
             return;
         }
@@ -194,11 +206,11 @@ public class FileUtils {
      * append content to file
      * @throws IOException
      */
-    public static void appendContentFile(String content, String filePath) throws IOException {
+    public static void appendContentFile(String filePath, String content) throws IOException {
         if (StringUtils.isEmpty(filePath)){
             return;
         }
-        appendContentFile(content, new File(filePath));
+        appendContentFile(new File(filePath), content);
     }
 
     /**
