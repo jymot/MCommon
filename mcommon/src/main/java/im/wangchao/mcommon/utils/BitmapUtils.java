@@ -1,14 +1,23 @@
 package im.wangchao.mcommon.utils;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.media.ExifInterface;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>Description  : BitmapUtils.</p>
@@ -22,165 +31,253 @@ public class BitmapUtils {
         throw new AssertionError();
     }
 
-    private static int mDesiredWidth;
-    private static int mDesiredHeight;
-
     /**
-     * Byte[]转Bitmap
+     * @return The inSampleSize with {@code options} {@code maxWidth} {@code maxHeight}.
      */
-    @Nullable public static Bitmap bytes2Bitmap(byte[] b) {
-        return (b == null || b.length == 0) ? null : BitmapFactory.decodeByteArray(b, 0, b.length);
+    public static int inSampleSize(BitmapFactory.Options options, int maxWidth, int maxHeight) {
+        // raw height and width of image
+        int rawWidth = options.outWidth;
+        int rawHeight = options.outHeight;
+
+        // calculate best sample size
+        int inSampleSize = 0;
+        if (rawHeight > maxHeight || rawWidth > maxWidth) {
+            float ratioWidth = (float) rawWidth / maxWidth;
+            float ratioHeight = (float) rawHeight / maxHeight;
+            inSampleSize = (int) Math.min(ratioHeight, ratioWidth);
+        }
+        inSampleSize = Math.max(1, inSampleSize);
+
+        return inSampleSize;
     }
 
     /**
-     * Bitmap转Byte[]
+     * @return Bitmap with raw resource.
      */
-    @Nullable public static byte[] bitmap2Bytes(Bitmap bitmap) {
-        if (bitmap == null){
-            return null;
-        }
-        ByteArrayOutputStream out = null;
-        try {
-            out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            return out.toByteArray();
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
+    public static Bitmap raw(Context context, int rawId) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        InputStream is = context.getResources().openRawResource(rawId);
+        return BitmapFactory.decodeStream(is, null, opt);
     }
 
     /**
-     * Bitmap转Drawable
+     * @return Rotate {@code angle} degrees bitmap. Default recycle the {@code originBitmap}.
      */
-    @Nullable public static Drawable bitmap2Drawable(Bitmap bitmap) {
-        if (bitmap == null){
-            return null;
-        }
-        return new BitmapDrawable(null, bitmap);
+    public static Bitmap rotate(Bitmap originBitmap, int angle) {
+        return rotate(originBitmap, angle, true);
     }
 
     /**
-     * Drawable转Bitmap
+     * @return Rotate {@code angle} degrees bitmap.
      */
-    @Nullable public static Bitmap drawable2Bitmap(Drawable drawable) {
-        if (drawable == null){
-            return null;
+    public static Bitmap rotate(Bitmap originBitmap, int angle, boolean recycle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(originBitmap,
+                0, 0, originBitmap.getWidth(), originBitmap.getHeight(), matrix, true);
+        if (recycle && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
         }
-        BitmapDrawable bd = (BitmapDrawable) drawable;
-        return bd.getBitmap();
+        return rotatedBitmap;
     }
 
     /**
-     * 旋转图像
+     * @return Scale {@code originBitmap}. Default recycle the {@code originBitmap}.
      */
-    public static Bitmap rotateBitmap(Bitmap bmp, int degrees) {
-        if (degrees != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(degrees);
-            return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-        }
-        return bmp;
+    public static Bitmap scale(Bitmap originBitmap, float scaleX, float scaleY) {
+        return scale(originBitmap, scaleX, scaleY, true);
     }
 
     /**
-     * 从Resources中加载图片
+     * @return Scale {@code originBitmap}.
      */
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+    public static Bitmap scale(Bitmap originBitmap, float scaleX, float scaleY, boolean recycle) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleX, scaleY);
+        Bitmap scaledBitmap = Bitmap.createBitmap(originBitmap,
+                0, 0, originBitmap.getWidth(), originBitmap.getHeight(), matrix, true);
+        if (recycle && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
+        }
+        return scaledBitmap;
+    }
+
+    /**
+     * @return New bitmap with height {@code dstHeight} and width {@code dstWidth}.
+     */
+    public static Bitmap scale(Bitmap originBitmap, int dstWidth, int dstHeight, boolean recycle) {
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originBitmap, dstWidth, dstHeight, true);
+        if (recycle && originBitmap != null && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
+        }
+        return scaledBitmap;
+    }
+
+    /**
+     * @return Thumbnail view.
+     */
+    public static Bitmap thumbnail(String path, int maxWidth, int maxHeight) {
+        return thumbnail(path, maxWidth, maxHeight, false);
+    }
+
+    /**
+     * @return Thumbnail view.
+     */
+    public static Bitmap thumbnail(String path, int maxWidth, int maxHeight, boolean autoRotate) {
+
+        int angle = 0;
+        if (autoRotate) {
+            angle = exifRotateAngle(path);
+        }
+
         BitmapFactory.Options options = new BitmapFactory.Options();
-        // 设置成了true,不占用内存，只获取bitmap宽高
         options.inJustDecodeBounds = true;
-        // 初始化options对象
-        BitmapFactory.decodeResource(res, resId, options);
-        // 得到计算好的options，目标宽、目标高
-        options = getBestOptions(options, reqWidth, reqHeight);
-        Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
-        return createScaleBitmap(src, mDesiredWidth, mDesiredHeight); // 进一步得到目标大小的缩略图
-    }
-
-    /**
-     * 从SD卡上加载图片
-     */
-    public static Bitmap decodeSampledBitmapFromFile(String pathName, int reqWidth, int reqHeight) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(pathName, options);
-        options = getBestOptions(options, reqWidth, reqHeight);
-        Bitmap src = BitmapFactory.decodeFile(pathName, options);
-        return createScaleBitmap(src, mDesiredWidth, mDesiredHeight);
-    }
-
-    /**
-     * 计算目标宽度，目标高度，inSampleSize
-     *
-     * @return BitmapFactory.Options对象
-     */
-    private static BitmapFactory.Options getBestOptions(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // 读取图片长宽
-        int actualWidth = options.outWidth;
-        int actualHeight = options.outHeight;
-        // Then compute the dimensions we would ideally like to decode to.
-        mDesiredWidth = getResizedDimension(reqWidth, reqHeight, actualWidth, actualHeight);
-        mDesiredHeight = getResizedDimension(reqHeight, reqWidth, actualHeight, actualWidth);
-        // 根据现在得到计算inSampleSize
-        options.inSampleSize = calculateBestInSampleSize(actualWidth, actualHeight, mDesiredWidth, mDesiredHeight);
-        // 使用获取到的inSampleSize值再次解析图片
+        // 获取这个图片的宽和高, 此时返回bm为空
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
         options.inJustDecodeBounds = false;
-        return options;
+        // 计算缩放比
+        options.inSampleSize = inSampleSize(options, maxWidth, maxHeight);
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inPurgeable = true;
+        options.inInputShareable = true;
+
+        if (bitmap != null && !bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
+        bitmap = BitmapFactory.decodeFile(path, options);
+
+        if (autoRotate && angle != 0) {
+            bitmap = rotate(bitmap, angle);
+        }
+
+        return bitmap;
     }
 
     /**
-     * Scales one side of a rectangle to fit aspect ratio. 最终得到重新测量的尺寸
-     *
-     * @param maxPrimary      Maximum size of the primary dimension (i.e. width for max
-     *                        width), or zero to maintain aspect ratio with secondary
-     *                        dimension
-     * @param maxSecondary    Maximum size of the secondary dimension, or zero to maintain
-     *                        aspect ratio with primary dimension
-     * @param actualPrimary   Actual size of the primary dimension
-     * @param actualSecondary Actual size of the secondary dimension
+     * Save bitmap.
+     * @return Save path.
      */
-    private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary, int actualSecondary) {
-        double ratio = (double) actualSecondary / (double) actualPrimary;
-        int resized = maxPrimary;
-        if (resized * ratio > maxSecondary) {
-            resized = (int) (maxSecondary / ratio);
+    public static String save(Bitmap bitmap, Bitmap.CompressFormat format, int quality, File destFile) {
+        try {
+            FileOutputStream out = new FileOutputStream(destFile);
+            if (bitmap.compress(format, quality, out)) {
+                out.flush();
+                out.close();
+            }
+
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+
+            return destFile.getAbsolutePath();
+        } catch (Exception e) {
+            //Silent
         }
-        return resized;
+        return null;
     }
 
     /**
-     * Returns the largest power-of-two divisor for use in downscaling a bitmap
-     * that will not result in the scaling past the desired dimensions.
-     *
-     * @param actualWidth   Actual width of the bitmap
-     * @param actualHeight  Actual height of the bitmap
-     * @param desiredWidth  Desired width of the bitmap
-     * @param desiredHeight Desired height of the bitmap
+     * @return Round bitmap.
      */
-    private static int calculateBestInSampleSize(int actualWidth, int actualHeight, int desiredWidth, int desiredHeight) {
-        double wr = (double) actualWidth / desiredWidth;
-        double hr = (double) actualHeight / desiredHeight;
-        double ratio = Math.min(wr, hr);
-        float inSampleSize = 1.0f;
-        while ((inSampleSize * 2) <= ratio) {
-            inSampleSize *= 2;
+    public static Bitmap round(Bitmap originBitmap, int radius, boolean recycle) {
+        // 准备画笔
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        // 准备裁剪的矩阵
+        Rect rect = new Rect(0, 0, originBitmap.getWidth(), originBitmap.getHeight());
+        RectF rectF = new RectF(new Rect(0, 0, originBitmap.getWidth(), originBitmap.getHeight()));
+
+        Bitmap roundBitmap = Bitmap.createBitmap(originBitmap.getWidth(), originBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(roundBitmap);
+        canvas.drawRoundRect(rectF, radius, radius, paint);
+
+        // 这一句是核心，关于Xfermode和SRC_IN请自行查阅
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(originBitmap, rect, rect, paint);
+
+        // 是否回收原始Bitmap
+        if (recycle && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
         }
 
-        return (int) inSampleSize;
+        return roundBitmap;
     }
 
     /**
-     * 通过传入的bitmap，进行压缩，得到符合标准的bitmap
+     * @return Circle bitmap.
      */
-    private static Bitmap createScaleBitmap(Bitmap tempBitmap, int desiredWidth, int desiredHeight) {
-        // If necessary, scale down to the maximal acceptable size.
-        if (tempBitmap != null && (tempBitmap.getWidth() > desiredWidth || tempBitmap.getHeight() > desiredHeight)) {
-            // 如果是放大图片，filter决定是否平滑，如果是缩小图片，filter无影响
-            Bitmap bitmap = Bitmap.createScaledBitmap(tempBitmap, desiredWidth, desiredHeight, true);
-            tempBitmap.recycle(); // 释放Bitmap的native像素数组
-            return bitmap;
-        } else {
-            return tempBitmap; // 如果没有缩放，那么不回收
+    public static Bitmap circle(Bitmap originBitmap, boolean recycle) {
+        int min = originBitmap.getWidth() > originBitmap.getHeight() ? originBitmap.getHeight() : originBitmap.getWidth();
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        Bitmap circleBitmap = Bitmap.createBitmap(min, min, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(circleBitmap);
+        canvas.drawCircle(min / 2, min / 2, min / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        // 居中显示
+        int left = - (originBitmap.getWidth() - min) / 2;
+        int top = - (originBitmap.getHeight() - min) / 2;
+        canvas.drawBitmap(originBitmap, left, top, paint);
+
+        // 是否回收原始Bitmap
+        if (recycle && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
         }
+
+        return circleBitmap;
+    }
+
+    /**
+     * @return Gray bitmap.
+     */
+    public static Bitmap gray(Bitmap originBitmap, boolean recycle) {
+        Bitmap grayBitmap = Bitmap.createBitmap(originBitmap.getWidth(),
+                originBitmap.getHeight(), Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(grayBitmap);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        ColorMatrixColorFilter colorMatrixColorFilter =
+                new ColorMatrixColorFilter(colorMatrix);
+        paint.setColorFilter(colorMatrixColorFilter);
+        canvas.drawBitmap(originBitmap, 0, 0, paint);
+
+        // 是否回收原始Bitmap
+        if (recycle && !originBitmap.isRecycled()) {
+            originBitmap.recycle();
+        }
+
+        //灰阶效果
+        return grayBitmap;
+    }
+
+    /**
+     * @return The bitmap of the EXIF rotate angle.
+     */
+    public static int exifRotateAngle(String path) {
+        int angle = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    angle = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    angle = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    angle = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            //Silent
+        }
+        return angle;
     }
 }
