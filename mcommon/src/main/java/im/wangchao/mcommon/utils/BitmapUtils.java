@@ -1,6 +1,7 @@
 package im.wangchao.mcommon.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -32,23 +33,112 @@ public class BitmapUtils {
     }
 
     /**
-     * @return The inSampleSize with {@code options} {@code maxWidth} {@code maxHeight}.
+     * @return Bitmap MimeType.
      */
-    public static int inSampleSize(BitmapFactory.Options options, int maxWidth, int maxHeight) {
-        // raw height and width of image
-        int rawWidth = options.outWidth;
-        int rawHeight = options.outHeight;
+    public static String mimeType(String filePath){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        return options.outMimeType;
+    }
 
-        // calculate best sample size
-        int inSampleSize = 0;
-        if (rawHeight > maxHeight || rawWidth > maxWidth) {
-            float ratioWidth = (float) rawWidth / maxWidth;
-            float ratioHeight = (float) rawHeight / maxHeight;
-            inSampleSize = (int) Math.min(ratioHeight, ratioWidth);
+    /**
+     * @return Bitmap MimeType.
+     */
+    public static String mimeType(byte[] bytes){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        return options.outMimeType;
+    }
+
+    /**
+     * @return Bitmap MimeType.
+     */
+    public static String mimeType(Resources res, int resId){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        return options.outMimeType;
+    }
+
+    /**
+     * @return The inSampleSize with {@code options} {@code reqWidth} {@code reqHeight}.
+     */
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
         }
-        inSampleSize = Math.max(1, inSampleSize);
 
         return inSampleSize;
+    }
+
+    /**
+     * @return The best bitmap.
+     */
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    /**
+     * @return The best bitmap.
+     */
+    public static Bitmap decodeSampledBitmapFromResource(String filePath, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    /**
+     * @return The best bitmap.
+     */
+    public static Bitmap decodeSampledBitmapFromResource(byte[] bytes, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
     }
 
     /**
@@ -135,19 +225,17 @@ public class BitmapUtils {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        // 获取这个图片的宽和高, 此时返回bm为空
-        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+
+        BitmapFactory.decodeFile(path, options);
         options.inJustDecodeBounds = false;
-        // 计算缩放比
-        options.inSampleSize = inSampleSize(options, maxWidth, maxHeight);
+
+        // Calculate InSampleSize
+        options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight);
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         options.inPurgeable = true;
         options.inInputShareable = true;
 
-        if (bitmap != null && !bitmap.isRecycled()) {
-            bitmap.recycle();
-        }
-        bitmap = BitmapFactory.decodeFile(path, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
 
         if (autoRotate && angle != 0) {
             bitmap = rotate(bitmap, angle);
@@ -174,7 +262,7 @@ public class BitmapUtils {
 
             return destFile.getAbsolutePath();
         } catch (Exception e) {
-            //Silent
+            // Silent
         }
         return null;
     }
@@ -183,11 +271,9 @@ public class BitmapUtils {
      * @return Round bitmap.
      */
     public static Bitmap round(Bitmap originBitmap, int radius, boolean recycle) {
-        // 准备画笔
         Paint paint = new Paint();
         paint.setAntiAlias(true);
 
-        // 准备裁剪的矩阵
         Rect rect = new Rect(0, 0, originBitmap.getWidth(), originBitmap.getHeight());
         RectF rectF = new RectF(new Rect(0, 0, originBitmap.getWidth(), originBitmap.getHeight()));
 
@@ -195,11 +281,9 @@ public class BitmapUtils {
         Canvas canvas = new Canvas(roundBitmap);
         canvas.drawRoundRect(rectF, radius, radius, paint);
 
-        // 这一句是核心，关于Xfermode和SRC_IN请自行查阅
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(originBitmap, rect, rect, paint);
 
-        // 是否回收原始Bitmap
         if (recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
@@ -219,12 +303,11 @@ public class BitmapUtils {
         canvas.drawCircle(min / 2, min / 2, min / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
-        // 居中显示
+        // Centered
         int left = - (originBitmap.getWidth() - min) / 2;
         int top = - (originBitmap.getHeight() - min) / 2;
         canvas.drawBitmap(originBitmap, left, top, paint);
 
-        // 是否回收原始Bitmap
         if (recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
@@ -247,12 +330,11 @@ public class BitmapUtils {
         paint.setColorFilter(colorMatrixColorFilter);
         canvas.drawBitmap(originBitmap, 0, 0, paint);
 
-        // 是否回收原始Bitmap
         if (recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
 
-        //灰阶效果
+        // Grayscale effect
         return grayBitmap;
     }
 
@@ -276,7 +358,7 @@ public class BitmapUtils {
                     break;
             }
         } catch (IOException e) {
-            //Silent
+            // Silent
         }
         return angle;
     }
