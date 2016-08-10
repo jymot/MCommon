@@ -61,7 +61,9 @@ public class BitmapUtils {
      * Cache bitmap to memory.
      */
     public static void addMemoryCache(String key, Bitmap bitmap){
-        mMemoryCache.put(key, bitmap);
+        if (getMemoryCache(key) == null){
+            mMemoryCache.put(key, bitmap);
+        }
     }
 
     /**
