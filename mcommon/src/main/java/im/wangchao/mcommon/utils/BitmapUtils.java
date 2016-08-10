@@ -14,6 +14,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
+import android.os.Build;
+import android.support.v4.util.LruCache;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +32,43 @@ import java.io.InputStream;
 public class BitmapUtils {
     private BitmapUtils(){
         throw new AssertionError();
+    }
+
+    private final static LruCache<String, Bitmap> mMemoryCache;
+    static {
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                    return bitmap.getAllocationByteCount() / 1024;
+                } else {
+                    return bitmap.getRowBytes() * bitmap.getHeight() / 1024; //also {@link Bitmap#getByteCount}
+                }
+            }
+        };
+    }
+
+    /**
+     * Cache bitmap to memory.
+     */
+    public static void addMemoryCache(String key, Bitmap bitmap){
+        mMemoryCache.put(key, bitmap);
+    }
+
+    /**
+     * @return Bitmap from memory cahce.
+     */
+    public static Bitmap getMemoryCache(String key){
+        return mMemoryCache.get(key);
     }
 
     /**
