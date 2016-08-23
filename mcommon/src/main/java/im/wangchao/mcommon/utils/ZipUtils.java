@@ -171,7 +171,7 @@ public class ZipUtils {
                 FileOutputStream fileOutputStream = null;
                 try {
                     fileOutputStream = new FileOutputStream(file);
-                    byte[] bytes = new byte[1024 * 5];
+                    byte[] bytes = new byte[BUFF_SIZE];
                     int len;
                     while ((len = zipInputStream.read(bytes)) != -1) {
                         fileOutputStream.write(bytes, 0, len);
