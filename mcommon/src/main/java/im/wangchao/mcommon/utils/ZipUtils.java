@@ -63,11 +63,11 @@ public class ZipUtils {
     /**
      * Real compression.
      */
-    private static void zip(File originalFile, String entryName, ZipOutputStream zipOutputStream) throws Exception {
-        if (originalFile.isFile()) {
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(originalFile);
+    private static void zip(File inputFile, String entryName, ZipOutputStream zipOutputStream) throws Exception {
+        FileInputStream in = null;
+        try {
+            if (inputFile.isFile()) {
+                in = new FileInputStream(inputFile);
                 ZipEntry zipEntry = new ZipEntry(entryName);
                 zipOutputStream.putNextEntry(zipEntry);
 
@@ -77,23 +77,22 @@ public class ZipUtils {
                     zipOutputStream.write(bytes, 0, len);
                 }
                 zipOutputStream.flush();
-            } finally {
-                zipOutputStream.closeEntry();
-                IOUtils.closeQuietly(zipOutputStream);
-                IOUtils.closeQuietly(in);
-            }
-        } else {
-            File[] files = originalFile.listFiles();
-            if (files.length <= 0) {
-                ZipEntry zipEntry = new ZipEntry(originalFile.getName() + "/");
-                zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.closeEntry();
             } else {
-                final String pre = entryName.concat(File.separator);
-                for (File childFile : files) {
-                    zip(childFile, pre.concat(childFile.getName()), zipOutputStream);
+                File[] files = inputFile.listFiles();
+                if (files.length <= 0) {
+                    ZipEntry zipEntry = new ZipEntry(inputFile.getName() + "/");
+                    zipOutputStream.putNextEntry(zipEntry);
+                    zipOutputStream.closeEntry();
+                } else {
+                    final String pre = entryName.concat(File.separator);
+                    for (File childFile : files) {
+                        zip(childFile, pre.concat(childFile.getName()), zipOutputStream);
+                    }
                 }
             }
+        } finally {
+            IOUtils.closeQuietly(in);
         }
     }
 
@@ -107,10 +106,8 @@ public class ZipUtils {
         if (StringUtils.isEmpty(targetPath)) {
             String zipParentPath = zipFile.getParent();
             if (StringUtils.isNotEmpty(zipParentPath)) {
-                targetPath = zipParentPath + File.separator;
+                targetPath = zipParentPath;
             }
-        } else {
-            targetPath = targetPath + File.separator;
         }
 
         File dir = new File(targetPath);
@@ -175,9 +172,7 @@ public class ZipUtils {
                     }
                     fileOutputStream.flush();
                 } finally {
-                    if (fileOutputStream != null) {
-                        fileOutputStream.close();
-                    }
+                    IOUtils.closeQuietly(fileOutputStream);
                 }
             }
         }
