@@ -45,10 +45,7 @@ public class ZipUtils {
             // Really zip.
             zip(inputFile, inputFile.getName(), zipOutputStream);
         } finally {
-            if (zipOutputStream != null) {
-                zipOutputStream.closeEntry();
-                zipOutputStream.close();
-            }
+            IOUtils.closeQuietly(zipOutputStream);
         }
         return true;
     }
@@ -81,6 +78,7 @@ public class ZipUtils {
                 }
                 zipOutputStream.flush();
             } finally {
+                zipOutputStream.closeEntry();
                 IOUtils.closeQuietly(zipOutputStream);
                 IOUtils.closeQuietly(in);
             }
@@ -106,6 +104,14 @@ public class ZipUtils {
     public static boolean unZip(@NonNull File zipFile, @NonNull String targetPath) throws IOException {
         if (!zipFile.exists()) throw new FileNotFoundException("File (" + zipFile.getName() + ") that needs to be decompressed does not exist.");
 
+        if (StringUtils.isEmpty(targetPath)) {
+            String zipParentPath = zipFile.getParent();
+            if (StringUtils.isNotEmpty(zipParentPath)) {
+                targetPath = zipParentPath + File.separator;
+            }
+        } else {
+            targetPath = targetPath + File.separator;
+        }
 
         File dir = new File(targetPath);
         if (dir.isFile()){
@@ -115,15 +121,6 @@ public class ZipUtils {
         File result = FileUtils.createDir(dir);
         if (result == null){
             throw new RuntimeException("Target path (" + targetPath + ") create a failed.");
-        }
-
-        if (StringUtils.isEmpty(targetPath)) {
-            String zipParentPath = zipFile.getParent();
-            if (StringUtils.isNotEmpty(zipParentPath)) {
-                targetPath = zipParentPath + File.separator;
-            }
-        } else {
-            targetPath = targetPath + File.separator;
         }
 
         ZipInputStream zipInputStream = null;
