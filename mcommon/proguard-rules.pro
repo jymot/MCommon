@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @im.wangchao.mcommon.permissions.AfterPermissionGranted <methods>;
+}
