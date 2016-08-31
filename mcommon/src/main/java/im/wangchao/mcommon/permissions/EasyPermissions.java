@@ -50,7 +50,8 @@ public class EasyPermissions {
     private static final String TAG = "EasyPermissions";
 
     public interface PermissionCallbacks {
-        void onPermissionsDenied(int requestCode, List<String> granted, List<String> denied);
+        void onPermissionsGranted(int requestCode, List<String> granted);
+        void onPermissionsDenied(int requestCode, List<String> denied);
     }
 
     /**
@@ -455,7 +456,7 @@ public class EasyPermissions {
                         public void onClick(DialogInterface dialog, int which) {
                             // act as if the permissions were denied
                             if (callback != null) {
-                                callback.onPermissionsDenied(requestCode, new ArrayList<String>(), Arrays.asList(perms));
+                                callback.onPermissionsDenied(requestCode, Arrays.asList(perms));
                             }
                         }
                     }).create();
@@ -500,10 +501,15 @@ public class EasyPermissions {
             }
         }
 
-        // Report denied permissions, if any.
-        if (!denied.isEmpty()) {
-            if (target instanceof PermissionCallbacks) {
-                ((PermissionCallbacks) target).onPermissionsDenied(requestCode, granted, denied);
+        if (target instanceof PermissionCallbacks){
+            final PermissionCallbacks callback = (PermissionCallbacks) target;
+            // Report granted permissions, if any.
+            if (!granted.isEmpty()){
+                callback.onPermissionsGranted(requestCode, granted);
+            }
+            // Report denied permissions, if any.
+            if (!denied.isEmpty()){
+                callback.onPermissionsDenied(requestCode, denied);
             }
         }
 
@@ -535,7 +541,7 @@ public class EasyPermissions {
      * {@value #SETTINGS_REQ_CODE} as requestCode
      * <p/>
      * NOTE: use of this method is optional, should be called from
-     * {@link PermissionCallbacks#onPermissionsDenied(int, List, List)}
+     * {@link PermissionCallbacks#onPermissionsDenied(int, List)}
      *
      * @param object                        the calling Activity or Fragment.
      * @param deniedPerms                   the set of denied permissions.
