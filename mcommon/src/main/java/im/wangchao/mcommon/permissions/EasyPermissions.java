@@ -49,8 +49,7 @@ public class EasyPermissions {
 
     private static final String TAG = "EasyPermissions";
 
-    public interface PermissionCallbacks extends
-            ActivityCompat.OnRequestPermissionsResultCallback {
+    public interface PermissionCallbacks {
         void onPermissionsDenied(int requestCode, List<String> granted, List<String> denied);
     }
 
