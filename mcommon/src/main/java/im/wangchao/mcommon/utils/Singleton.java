@@ -2,7 +2,6 @@ package im.wangchao.mcommon.utils;
 
 /**
  * <p>Description  : Singleton.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 16/8/24.</p>
  * <p>Time         : 下午5:45.</p>

@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * <p>Description  : AppUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 16/8/23.</p>
  * <p>Time         : 下午2:23.</p>

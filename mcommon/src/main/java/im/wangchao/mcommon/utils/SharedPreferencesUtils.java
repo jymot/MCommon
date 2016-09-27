@@ -10,7 +10,6 @@ import java.util.Map;
 
 /**
  * <p>Description  : SharedPreferencesUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/9.</p>
  * <p>Time         : 下午8:46.</p>

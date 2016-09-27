@@ -21,7 +21,6 @@ import java.net.URLConnection;
 
 /**
  * <p>Description  : IOUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/11.</p>
  * <p>Time         : 下午3:09.</p>

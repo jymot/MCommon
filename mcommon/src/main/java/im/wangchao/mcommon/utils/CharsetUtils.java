@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 
 /**
  * <p>Description  : CharsetUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/17.</p>
  * <p>Time         : 上午8:48.</p>

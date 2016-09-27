@@ -13,7 +13,6 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * <p>Description  : ZipUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 16/6/29.</p>
  * <p>Time         : 上午11:07.</p>

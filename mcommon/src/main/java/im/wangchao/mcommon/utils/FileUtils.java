@@ -17,7 +17,6 @@ import java.io.OutputStream;
 
 /**
  * <p>Description  : FileUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 16/1/22.</p>
  * <p>Time         : 上午8:38.</p>

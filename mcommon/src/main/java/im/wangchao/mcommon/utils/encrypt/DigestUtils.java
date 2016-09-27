@@ -11,7 +11,6 @@ import im.wangchao.mcommon.utils.StringUtils;
 
 /**
  * <p>Description  : Digest.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/16.</p>
  * <p>Time         : 下午3:27.</p>

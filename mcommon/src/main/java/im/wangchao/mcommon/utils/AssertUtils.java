@@ -2,7 +2,6 @@ package im.wangchao.mcommon.utils;
 
 /**
  * <p>Description  : AssertUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/17.</p>
  * <p>Time         : 下午2:10.</p>

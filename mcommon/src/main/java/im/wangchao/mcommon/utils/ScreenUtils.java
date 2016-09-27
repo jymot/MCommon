@@ -15,7 +15,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * <p>Description  : ScreenUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/13.</p>
  * <p>Time         : 上午9:50.</p>

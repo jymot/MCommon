@@ -13,7 +13,6 @@ import javax.crypto.spec.IvParameterSpec;
 
 /**
  * <p>Description  : DES Encrypt.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/8/4.</p>
  * <p>Time         : 下午1:48.</p>

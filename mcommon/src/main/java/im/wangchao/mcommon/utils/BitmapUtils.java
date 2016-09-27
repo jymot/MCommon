@@ -24,7 +24,6 @@ import java.io.InputStream;
 
 /**
  * <p>Description  : BitmapUtils.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 15/12/13.</p>
  * <p>Time         : 上午9:46.</p>

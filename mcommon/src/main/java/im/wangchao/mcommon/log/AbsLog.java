@@ -9,7 +9,6 @@ import im.wangchao.mcommon.utils.StringUtils;
 
 /**
  * <p>Description  : AbsLog.</p>
- * <p/>
  * <p>Author       : wangchao.</p>
  * <p>Date         : 16/6/27.</p>
  * <p>Time         : 下午4:49.</p>
