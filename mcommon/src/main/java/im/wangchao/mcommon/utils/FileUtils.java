@@ -346,29 +346,61 @@ public class FileUtils {
     }
 
     /**
-     * Delete File.
+     * Delete a single file.
+     * @param file Target file
+     * @return Delete result.
+     */
+    public static boolean deleteFile(File file){
+        if (file == null || !file.exists()){
+            return false;
+        }
+
+        boolean deleted = file.delete();
+        if (!deleted) {
+            file.deleteOnExit();
+        }
+        return deleted;
+    }
+
+    /**
+     * Delete a single file.
+     * @param path Target file path
+     * @return Delete result.
+     */
+    public static boolean deleteFile(String path){
+        return StringUtils.isNotEmpty(path) && deleteFile(new File(path));
+    }
+
+    /**
+     * Delete File or Directory.
      * @return  boolean
      */
-    public static boolean deleteFile(File file) {
+    public static boolean deleteFileOrDir(File file) {
         if (file == null || !file.exists())
             return false;
 
         if (file.isDirectory()) {
             File[] childFiles = file.listFiles();
-            for (File childFile : childFiles) {
-                deleteFile(childFile);
+            if (childFiles != null){
+                boolean result = true;
+                for (File childFile : childFiles) {
+                    result &= deleteFileOrDir(childFile);
+                }
+                return result && deleteFile(file);
             }
+        } else if (file.isFile()){
+            return deleteFile(file);
         }
 
-        return file.delete();
+        return true;
     }
 
     /**
      * Delete File.
      * @return  boolean
      */
-    public static boolean deleteFile(String path){
-        return StringUtils.isNotEmpty(path) && deleteFile(new File(path));
+    public static boolean deleteFileOrDir(String path){
+        return StringUtils.isNotEmpty(path) && deleteFileOrDir(new File(path));
     }
 
     /**
