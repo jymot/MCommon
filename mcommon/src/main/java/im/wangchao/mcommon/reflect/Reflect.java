@@ -41,6 +41,7 @@ public class Reflect {
         Constructor constructor = null;
         try {
             constructor = targetCls.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
