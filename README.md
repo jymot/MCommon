@@ -2,5 +2,5 @@
 Android common library
 ### Gradle:
 ```gradle
-  compile 'im.wangchao:mcommon:0.7.1'
+  compile 'im.wangchao:mcommon:0.7.2'
 ```

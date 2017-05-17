@@ -217,22 +217,8 @@ public class BitmapUtils {
     /**
      * @return Scale {@code originBitmap}. Default recycle the {@code originBitmap}.
      */
-    public static Bitmap scale(Bitmap originBitmap, float scaleX, float scaleY) {
-        return scale(originBitmap, scaleX, scaleY, true);
-    }
-
-    /**
-     * @return Scale {@code originBitmap}.
-     */
-    public static Bitmap scale(Bitmap originBitmap, float scaleX, float scaleY, boolean recycle) {
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleX, scaleY);
-        Bitmap scaledBitmap = Bitmap.createBitmap(originBitmap,
-                0, 0, originBitmap.getWidth(), originBitmap.getHeight(), matrix, true);
-        if (recycle && !originBitmap.isRecycled()) {
-            originBitmap.recycle();
-        }
-        return scaledBitmap;
+    public static Bitmap scale(Bitmap originBitmap, int dstWidth, int dstHeight) {
+        return scale(originBitmap, dstWidth, dstHeight, true);
     }
 
     /**
