@@ -4,3 +4,5 @@ Android common library
 ```gradle
   compile 'im.wangchao:mcommon:0.8.2'
 ```
+### TODO
+- optmize
