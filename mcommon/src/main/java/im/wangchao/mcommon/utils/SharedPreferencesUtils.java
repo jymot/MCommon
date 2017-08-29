@@ -68,9 +68,9 @@ public class SharedPreferencesUtils {
      * @param key           Key
      * @param defaultValue  Value to return if this preference does not exist.
      * @param <T>           Target value
-     * @return              (T)value, may be null
+     * @return              (T)value or default value
      */
-    @Nullable @SuppressWarnings({"unchecked"})public static <T> T opt(@NonNull Context context, @NonNull String key, T defaultValue){
+    @SuppressWarnings({"unchecked"})public static <T> T opt(@NonNull Context context, @NonNull String key, T defaultValue){
         final SharedPreferences sp = getSharedPreferences(context);
         final Map<String, ?> map = sp.getAll();
         T t;
