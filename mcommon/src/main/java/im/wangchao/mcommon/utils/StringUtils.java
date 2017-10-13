@@ -315,4 +315,56 @@ public class StringUtils {
         }
         return digest;
     }
+
+    /**
+     * <p>Hex string to Bytes</p>
+     *
+     * @param hex hex string
+     * @return bytes
+     */
+    public static byte[] hexStringToBytes(String hex){
+        BigInteger hexInt = new BigInteger(hex, 16);
+        return hexInt.toByteArray();
+    }
+
+    /**
+     * <p>Bytes to hex string</p>
+     *
+     * @param data this source bytes array
+     * @return hex string
+     */
+    private static String toHexString(byte[] data) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0, len = data.length; i < len; i++) {
+
+            //取出字节的高四位 作为索引得到相应的十六进制标识符 注意无符号右移
+            builder.append(HEX_CHAR[(data[i] & 0xf0) >>> 4]);
+
+            //取出字节的低四位 作为索引得到相应的十六进制标识符
+            builder.append(HEX_CHAR[(data[i] & 0x0f)]);
+
+        }
+        return builder.toString();
+    }
+
+    /**
+     * <p>Hex Bytes to Dec Bytes</p>
+     * @param hexData hex bytes
+     * @return dec bytes
+     */
+    private static byte[] hexBytesToDecBytes(byte[] hexData) {
+        if ((hexData.length % 2) != 0)
+            throw new IllegalArgumentException("The source bytes length is not even.");
+
+        byte[] out = new byte[hexData.length / 2];
+        for (int n = 0, len = hexData.length; n < len; n += 2) {
+            String item = new String(hexData, n, 2);
+            out[n / 2]  = (byte) Integer.parseInt(item, 16);
+        }
+
+        return out;
+    }
+
+    private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
 }
