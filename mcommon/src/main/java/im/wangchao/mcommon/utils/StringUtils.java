@@ -333,7 +333,7 @@ public class StringUtils {
      * @param data this source bytes array
      * @return hex string
      */
-    private static String toHexString(byte[] data) {
+    public static String toHexString(byte[] data) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0, len = data.length; i < len; i++) {
 
@@ -352,7 +352,7 @@ public class StringUtils {
      * @param hexData hex bytes
      * @return dec bytes
      */
-    private static byte[] hexBytesToDecBytes(byte[] hexData) {
+    public static byte[] hexBytesToDecBytes(byte[] hexData) {
         if ((hexData.length % 2) != 0)
             throw new IllegalArgumentException("The source bytes length is not even.");
 
