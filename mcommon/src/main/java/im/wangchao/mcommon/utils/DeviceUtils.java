@@ -20,56 +20,56 @@ public class DeviceUtils {
     /**
      * Get the device's Universally Unique Identifier (UUID).
      */
-    public String getUUID(Context context) {
+    public static String getUUID(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     /**
      * Get the end-user-visible name for the end product.
      */
-    public String getModel() {
+    public static String getModel() {
         return android.os.Build.MODEL;
     }
 
     /**
      * Get the name of the overall product.
      */
-    public String getProductName() {
+    public static String getProductName() {
         return android.os.Build.PRODUCT;
     }
 
     /**
      * Get the manufacturer of the product/hardware.
      */
-    public String getManufacturer() {
+    public static String getManufacturer() {
         return android.os.Build.MANUFACTURER;
     }
 
     /**
      * Get a hardware serial number.
      */
-    public String getSerialNumber() {
+    public static String getSerialNumber() {
         return android.os.Build.SERIAL;
     }
 
     /**
      * Get the OS version.
      */
-    public String getOSVersion() {
+    public static String getOSVersion() {
         return android.os.Build.VERSION.RELEASE;
     }
 
     /**
      * Get the SDK version.
      */
-    public int getSDKVersion() {
+    public static int getSDKVersion() {
         return Build.VERSION.SDK_INT;
     }
 
     /**
      * Get the time zone ID.
      */
-    public String getTimeZoneID() {
+    public static String getTimeZoneID() {
         TimeZone tz = TimeZone.getDefault();
         return tz.getID();
     }
@@ -77,7 +77,7 @@ public class DeviceUtils {
     /**
      * Whether it is virtual.
      */
-    public boolean isVirtual() {
+    public static boolean isVirtual() {
         return android.os.Build.FINGERPRINT.contains("generic") ||
                 android.os.Build.PRODUCT.contains("sdk");
     }
