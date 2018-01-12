@@ -1,13 +1,17 @@
 package im.wangchao.mcommon.utils;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.List;
+
+import im.wangchao.mcommon.utils.encrypt.DigestUtils;
 
 /**
  * <p>Description  : AppUtils.</p>
@@ -79,6 +83,38 @@ public class AppUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * @return The app signature info.
+     */
+    public static String[] getSign(Context context, String packageName) {
+        Signature[] signs = getRawSignature(context, packageName);
+        if (signs == null || signs.length == 0) {
+            return null;
+        }
+        final int len = signs.length;
+        String[] result = new String[len];
+        for (int i = 0; i < len; i++){
+            result[i] = DigestUtils.md5(signs[i].toCharsString());
+        }
+
+        return result;
+    }
+
+    private static Signature[] getRawSignature(Context context, String packageName) {
+        if (packageName == null || packageName.length() == 0) {
+            return null;
+        }
+        try {
+            @SuppressLint("PackageManagerGetSignatures") PackageInfo info = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+            if (info != null) {
+                return info.signatures;
+            }
+            return null;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
 }
