@@ -300,6 +300,69 @@ public class StringUtils {
     }
 
     /**
+     * Returns true if a and b are equal, including if they are both null.
+     * <p><i>Note: In platform versions 1.1 and earlier, this method only worked well if
+     * both the arguments were instances of String.</i></p>
+     * @param a first CharSequence to check
+     * @param b second CharSequence to check
+     * @return true if a and b are equal
+     */
+    public static boolean equals(CharSequence a, CharSequence b) {
+        if (a == b) return true;
+        int length;
+        if (a != null && b != null && (length = a.length()) == b.length()) {
+            if (a instanceof String && b instanceof String) {
+                return a.equals(b);
+            } else {
+                for (int i = 0; i < length; i++) {
+                    if (a.charAt(i) != b.charAt(i)) return false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns a string with no code points <code><= \\u0020</code> at
+     * the beginning or end.
+     */
+    public static String trim(String string){
+        if (isEmpty(string)){
+            return EMPTY;
+        }
+        return string.trim();
+    }
+
+    /**
+     * <p>Check chinese string.</p>
+     */
+    public static boolean checkNameChinese(String string) {
+        boolean res = true;
+        char[] cTemp = string.toCharArray();
+        for (int i = 0; i < string.length(); i++) {
+            if (!isChinese(cTemp[i])) {
+                res = false;
+                break;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * <p>Check chinese char.</p>
+     */
+    private static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        return (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS);
+    }
+
+    /**
      * <p>Bytes to hex string</p>
      *
      * @param bytes this source bytes array
