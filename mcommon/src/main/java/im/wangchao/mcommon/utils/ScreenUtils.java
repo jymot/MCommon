@@ -155,7 +155,7 @@ public class ScreenUtils {
     /**
      * @return Screen size, int[0] = width, int[1] = height.
      */
-    public static int[] getScreenCompat(@NonNull Activity activity) {
+    public static int[] getScreenResolution(@NonNull Activity activity) {
         //>= API13
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB_MR1) {
             Display display = activity.getWindowManager().getDefaultDisplay();
@@ -170,6 +170,21 @@ public class ScreenUtils {
             int h = outMetrics.heightPixels;//获得手机屏幕的高度
             return new int[]{w, h};
         }
+    }
+
+    /**
+     * @return Screen size, int[0] = width, int[1] = height.
+     */
+    public static int[] getScreenResolution(@NonNull Context context){
+        WindowManager wm = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        if (wm == null){
+            return null;
+        }
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        int w = outMetrics.widthPixels;
+        int h = outMetrics.heightPixels;
+        return new int[]{w, h};
     }
 
     /**
