@@ -21,6 +21,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation deps.junit
     compileOnly deps.appcompatv7
+    compileOnly deps.exifinterface
 }
 
 apply from: 'https://raw.githubusercontent.com/motcwang/Utils/master/bintray-publish/bintray.gradle'

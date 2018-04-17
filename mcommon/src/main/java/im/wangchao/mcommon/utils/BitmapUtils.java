@@ -13,7 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.ExifInterface;
+import android.support.media.ExifInterface;
 import android.os.Build;
 import android.support.v4.util.LruCache;
 
@@ -106,10 +106,24 @@ public class BitmapUtils {
      * @return The inSampleSize with {@code options} {@code reqWidth} {@code reqHeight}.
      */
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        return calculateInSampleSize(options, null, reqWidth, reqHeight);
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, String path, int reqWidth, int reqHeight) {
         // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
+        int height = options.outHeight;
+        int width = options.outWidth;
         int inSampleSize = 1;
+
+        if (StringUtils.isNotEmpty(path) && (height == -1 || width == -1)) {
+            try {
+                ExifInterface exifInterface = new ExifInterface(path);
+                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
+                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (height > reqHeight || width > reqWidth) {
 
@@ -226,7 +240,7 @@ public class BitmapUtils {
      */
     public static Bitmap scale(Bitmap originBitmap, int dstWidth, int dstHeight, boolean recycle) {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(originBitmap, dstWidth, dstHeight, true);
-        if (recycle && originBitmap != null && !originBitmap.isRecycled()) {
+        if (recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
         return scaledBitmap;
