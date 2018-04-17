@@ -56,10 +56,27 @@ public class BitmapUtils {
         };
     }
 
+    public static <T> T checkNotNull(T t){
+        if (t == null){
+            throw new NullPointerException();
+        }
+        return t;
+    }
+
+    public static <T> T checkNotNull(T t, String message){
+        if (t == null){
+            throw new NullPointerException(message);
+        }
+        return t;
+    }
+
     /**
      * Cache bitmap to memory.
      */
     public static void addMemoryCache(String key, Bitmap bitmap){
+        if (key == null || bitmap == null){
+            return;
+        }
         if (getMemoryCache(key) == null){
             mMemoryCache.put(key, bitmap);
         }
@@ -69,7 +86,7 @@ public class BitmapUtils {
      * @return Bitmap from memory cahce.
      */
     public static Bitmap getMemoryCache(String key){
-        return mMemoryCache.get(key);
+        return key == null ? null : mMemoryCache.get(key);
     }
 
     /**
@@ -109,13 +126,16 @@ public class BitmapUtils {
         return calculateInSampleSize(options, null, reqWidth, reqHeight);
     }
 
+    /**
+     * @return The inSampleSize with {@code options} {@code reqWidth} {@code reqHeight}.
+     */
     public static int calculateInSampleSize(BitmapFactory.Options options, String path, int reqWidth, int reqHeight) {
         // Raw height and width of image
         int height = options.outHeight;
         int width = options.outWidth;
         int inSampleSize = 1;
 
-        if (StringUtils.isNotEmpty(path) && (height == -1 || width == -1)) {
+        if (path != null && !path.isEmpty() && (height == -1 || width == -1)) {
             try {
                 ExifInterface exifInterface = new ExifInterface(path);
                 height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
@@ -154,8 +174,9 @@ public class BitmapUtils {
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
+        final int[] size = compatSize(options, reqWidth, reqHeight, null);
+        handleDecodeOptions(options, size[0], size[1]);
+
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
@@ -169,11 +190,9 @@ public class BitmapUtils {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
 
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        final int[] size = compatSize(options, reqWidth, reqHeight, filePath);
+        handleDecodeOptions(options, size[0], size[1]);
 
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(filePath, options);
     }
 
@@ -187,12 +206,104 @@ public class BitmapUtils {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
 
+        final int[] size = compatSize(options, reqWidth, reqHeight, null);
+        handleDecodeOptions(options, size[0], size[1]);
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+    }
+
+    /**
+     * @return The best bitmap.
+     */
+    public static Bitmap decodeBitmapAndScale(String filePath, int reqWidth, int reqHeight, Bitmap.Config bitmapConfig){
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+
+        final int[] size = compatSize(options, reqWidth, reqHeight, filePath);
+        handleDecodeOptions(options, size[0], size[1]);
+
+        Bitmap decodeBitmap = BitmapFactory.decodeFile(filePath, options);
+
+        try {
+            int actualWidth = size[0];
+            int actualHeight = size[1];
+            Bitmap scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, bitmapConfig);
+
+            float ratioX = actualWidth / (float) options.outWidth;
+            float ratioY = actualHeight / (float) options.outHeight;
+
+            Matrix scaleMatrix = new Matrix();
+            scaleMatrix.setScale(ratioX, ratioY, 0, 0);
+
+            Canvas canvas = new Canvas(scaledBitmap);
+            canvas.setMatrix(scaleMatrix);
+            canvas.drawBitmap(decodeBitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
+
+            return scaledBitmap;
+        } catch (OutOfMemoryError exception) {
+            return decodeBitmap;
+        }
+    }
+
+    /**
+     * @return Compat size, width = int[0], height = int[1].
+     */
+    private static int[] compatSize(BitmapFactory.Options options, int maxWidth, int maxHeight, String filePath){
+        int actualHeight = options.outHeight;
+        int actualWidth = options.outWidth;
+
+        if (filePath != null && !filePath.isEmpty() && (actualHeight <= 0 || actualWidth <= 0)){
+            try {
+                ExifInterface exifInterface = new ExifInterface(filePath);
+                actualHeight = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_NORMAL);
+                actualWidth = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_NORMAL);
+            } catch (IOException ignore) { }
+        }
+
+        if (actualWidth <= 0 || actualHeight <= 0) {
+            actualWidth = maxWidth;
+            actualHeight = maxHeight;
+        }
+
+        //width and height values are set maintaining the aspect ratio of the image
+        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+            float imgRatio = (float) actualWidth / actualHeight;
+            float maxRatio = (float) (maxWidth * 1.0 / maxHeight);
+
+            if (imgRatio < maxRatio) {
+                imgRatio = maxHeight / actualHeight;
+                actualWidth = (int) (imgRatio * actualWidth);
+                actualHeight = maxHeight;
+            } else if (imgRatio > maxRatio) {
+                imgRatio = maxWidth / actualWidth;
+                actualHeight = (int) (imgRatio * actualHeight);
+                actualWidth = maxWidth;
+            } else {
+                actualHeight = maxHeight;
+                actualWidth = maxWidth;
+            }
+        }
+
+        return new int[]{actualWidth, actualHeight};
+    }
+
+    /**
+     * Handle decode options
+     */
+    private static void handleDecodeOptions(BitmapFactory.Options options, int reqWidth, int reqHeight){
+
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+
+        // This options allow android to claim the bitmap memory if it runs low on memory
+        // Work on < Build.VERSION_CODES.KITKAT
+        options.inPurgeable = true;
+        options.inInputShareable = true;
+        options.inTempStorage = new byte[16 * 1024];
     }
 
     /**
@@ -222,7 +333,7 @@ public class BitmapUtils {
         matrix.postRotate(angle);
         Bitmap rotatedBitmap = Bitmap.createBitmap(originBitmap,
                 0, 0, originBitmap.getWidth(), originBitmap.getHeight(), matrix, true);
-        if (recycle && !originBitmap.isRecycled()) {
+        if (originBitmap != rotatedBitmap && recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
         return rotatedBitmap;
@@ -240,7 +351,7 @@ public class BitmapUtils {
      */
     public static Bitmap scale(Bitmap originBitmap, int dstWidth, int dstHeight, boolean recycle) {
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(originBitmap, dstWidth, dstHeight, true);
-        if (recycle && !originBitmap.isRecycled()) {
+        if (originBitmap != scaledBitmap && recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
         return scaledBitmap;
@@ -272,6 +383,7 @@ public class BitmapUtils {
         // Calculate InSampleSize
         options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight);
         options.inPreferredConfig = Bitmap.Config.RGB_565;
+        // Work on < Build.VERSION_CODES.KITKAT
         options.inPurgeable = true;
         options.inInputShareable = true;
 
@@ -324,7 +436,7 @@ public class BitmapUtils {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(originBitmap, rect, rect, paint);
 
-        if (recycle && !originBitmap.isRecycled()) {
+        if (originBitmap != roundBitmap && recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
 
@@ -348,7 +460,7 @@ public class BitmapUtils {
         int top = - (originBitmap.getHeight() - min) / 2;
         canvas.drawBitmap(originBitmap, left, top, paint);
 
-        if (recycle && !originBitmap.isRecycled()) {
+        if (originBitmap != circleBitmap && recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
 
@@ -370,7 +482,7 @@ public class BitmapUtils {
         paint.setColorFilter(colorMatrixColorFilter);
         canvas.drawBitmap(originBitmap, 0, 0, paint);
 
-        if (recycle && !originBitmap.isRecycled()) {
+        if (originBitmap != grayBitmap && recycle && !originBitmap.isRecycled()) {
             originBitmap.recycle();
         }
 
